@@ -513,19 +513,3 @@ def volumes():
             'CITEX': [citex, citex_vs_total],
             'ViteX': [vitex, vitex_vs_total]
             }}
-
-
-# def update(save=False):
-#     start_time = monotonic()
-#     for exchange in all_exchanges():
-#         exchange_details(exchange)
-#     coingecko_data(save=save)
-#     citex_data(save=save)
-#     vitex_data(save=save)
-#     sleep(1.2)
-#     pool_data()
-#     explorer_data(save=save)
-#     currency_data()
-#     epic_data(save=save)
-#     end_time = monotonic()
-#     return print(f"*** ALL UPDATES DONE *** {timedelta(seconds=end_time - start_time)}")
