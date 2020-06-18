@@ -190,10 +190,10 @@
                                 </div>
                             </div> <!-- end row-->
                             <div class="pull-left mt-2">
+                                {{filters.epic.data.usdt.last.percentage_change_24h|check_arrow|safe}}
                                <span class="mr-2 color-{{filters.epic.data.usdt.last.percentage_change_24h|check_color}}" style="font-size: 1.5rem; font-weight: bold;">
 <!--                                        <i class="fa fa-arrow-up color-green"></i>-->
-                                       {{filters.epic.data.usdt.last.percentage_change_24h}}
-                                    {{filters.epic.data.usdt.last.percentage_change_24h|check_arrow|safe}}
+                                   {{filters.epic.data.usdt.last.percentage_change_24h}}%
                                 </span>
                                 change in last 24 hours.
                             </div>
@@ -235,7 +235,7 @@
                             </div> <!-- end row-->
                             <div class="pull-left mt-2">
                                 <span class="text-light" style="font-size: 1.5rem; font-weight: bold;">
-                                    {{volumes.total.all|get_percent:filters.epic.explorer.circulating}}
+                                    {{volumes.total.all|get_percent:filters.epic.explorer.circulating}}%
                                 </span>
                                  of circulating supply
                             </div>
@@ -276,7 +276,7 @@
                             <div class="pull-left mt-2" style="text-decoration: line-through;">
                                <span class="mr-2  color-green" style="font-size: 1.5rem; font-weight: bold;">
                                         <i class="fa fa-arrow-up color-green"></i>
-                                        {{volumes.total.all|get_percent:filters.epic.explorer.circulating}}
+                                        {{volumes.total.all|get_percent:filters.epic.explorer.circulating}}%
                                 </span>
                                 change in last 24 hours.
                             </div>
