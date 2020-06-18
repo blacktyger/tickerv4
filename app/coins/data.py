@@ -437,14 +437,11 @@ def epic_data(save=False):
         for target in PAIRS:
             if target == currency:
                 prices.append(avg(source[target]))
-                # print(sum(source[target]))
             else:
                 if currency == 'usdt':
                     prices.append(btc_to_usd(avg(source[target])))
-                    # print(sum(source[target]))
                 elif currency == "btc":
                     prices.append(usd_to_btc(avg(source[target])))
-                    # print(sum(source[target]))
         return avg(prices)
 
     for target in PAIRS:
