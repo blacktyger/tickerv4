@@ -18,7 +18,7 @@ from .globals import pairs
 
 
 def index(request):
-    mw_data = {coin.symbol: CoinGecko.objects.get(coin=coin).data
+    mw_data = {coin.symbol: CoinGecko.objects.filter(coin=coin).last().data
                for coin in all_coins() if coin.mw_coin}
 
     for chart in Chart.objects.filter(name='mw_chart'):

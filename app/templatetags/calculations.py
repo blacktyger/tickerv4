@@ -11,9 +11,9 @@ register = template.Library()
 @register.filter(name='check_color')
 def check_color(value):
     if d(value) <= 0:
-        return '<i class="fa fa-caret-down color-red"></i>'
+        return '<i class="fa fa-arrow-down color-red"></i>'
     else:
-        return '<i class="fa fa-caret-up color-green"></i>'
+        return '<i class="fa fa-arrow-up color-green"></i>'
 
 
 @register.filter

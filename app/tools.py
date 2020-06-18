@@ -65,7 +65,7 @@ def avg(numbers):
 
 
 def get_gecko(coin):
-    return CoinGecko.objects.get(coin=coin)
+    return CoinGecko.objects.filter(coin=coin).last()
 
 
 def get_ticker(coin, exchange, last=False):

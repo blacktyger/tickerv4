@@ -8,6 +8,29 @@
 </script>
 <head>
     <style>
+
+     div.screen-large {
+        visibility: visible;
+    }
+
+    div.screen-mobile {
+        display: none;
+    }
+
+    @media screen and (max-width: 700px) {
+        div.screen-large {
+            display: none;
+        }
+        div.screen-mobile {
+            display: block;
+        }
+    }
+    .dollar-color {
+        color: rgb(107,142,35);
+    }
+    .card-title{
+        font-color: white;
+    }
     .show_hide {
         visibility: visible;
 <!--        visibility: hidden;-->
@@ -91,7 +114,7 @@
     </div>
 </div>
 <div class="row px-4">
-    <div class="col-lg-12">
+    <div class="col-lg-12 screen-large">
         <section class="widget widget-height-min">
             <section class="feed-item">
                 <div class="icon pull-left">
@@ -101,6 +124,30 @@
                     <div class="text">
                         <p>
                             <span class="num-md-white">Epic-Cash</span> worldwide prices:
+                            {% for c in currency %}
+                            <span class="ml-1">
+                                <img class="ml-3 mr-1" src="{{c.flag}}" height="18px">{{c.symbol}}:
+                                <span class="num-md-white">{{c.price|times:filters.epic.data.usdt.last.avg_price|floatformat:-3}}</span>
+                            </span>
+                            {% endfor %}
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </section>
+    </div>
+    <div class="col-lg-12 screen-mobile">
+        <section class="widget widget-height-min">
+            <section class="feed-item">
+                <div class="icon pull-left">
+                    <img class="img px-1 py-1" src="{% static 'imgs/btn1.png' %}" alt="" height="22">
+                </div>
+                <div class="feed-item-body">
+                    <div class="text">
+                        <p>
+                            <span class="num-md-white">Epic-Cash</span> worldwide prices:
+                        </p>
+                        <p>
                             {% for c in currency %}
                             <span class="ml-1">
                                 <img class="ml-3 mr-1" src="{{c.flag}}" height="18px">{{c.symbol}}:
@@ -124,53 +171,133 @@
                     </div>
                     <div class="feed-item-body">
                         <div class="text">
-                            <p>
-                                Average price from {{all_exchanges|length}} exchanges:
-                            </p>
-                            <p>
-                                <i class="fa fa-dollar color-green"></i>
-                                <span class="num-md-white">{{filters.epic.data.usdt.last.avg_price|floatformat:-4}}</span>
-                                {{filters.epic.data.usdt.last.percentage_change_24h|check_color|safe}}
-                            </p>
-                            <p>
-                                <i class="fa fa-btc color-orange"></i>
-                                <span class="num-md-white">{{filters.epic.data.btc.last.avg_price|floatformat:-8}}</span>
-                                {{filters.epic.data.btc.last.percentage_change_24h|check_color|safe}}
-                            </p>
-                        </div>
-                        <div class="pull-right text-muted show_hide">
-                            {{filters.epic.data.last.0.updated|date:"jS M, H:i:s"}}
+                            <h5 class="card-title mt-1 pb-1 text-white text-truncate">
+                                <strong>Average price</strong>
+                            </h5>
+                            <hr>
+                            <div class="row align-items-center mb-3">
+                                <div class="col-auto">
+                                    <span class="my-2 py-1" style="font-size: 2.2rem;">
+                                        <strong>
+                                            <i class="fa fa-dollar dollar-color"></i>
+                                            0.0539
+                                        </strong>
+                                    </span>
+                                </div>
+                                <div class="col-xl-7 col-lg-7 col-xs-7">
+                                    <span class="my-2 py-1" style="font-size: 2.2rem;">
+                                        <strong>
+                                            <i class="fa fa-bitcoin color-orange"></i>
+                                            0.00000576
+                                        </strong>
+                                    </span>
+                                </div>
+                            </div> <!-- end row-->
+                            <div class="pull-left mt-2">
+                               <span class="mr-2 color-green" style="font-size: 1.5rem; font-weight: bold;">
+                                        <i class="fa fa-arrow-up color-green"></i>
+                                        5.37%
+                                </span>
+                                change in last 24 hours.
+                            </div>
                         </div>
                     </div>
                 </section>
             </section>
         </div>
-        <div class="col-lg-4">
+<!--        <div class="col-lg-4">-->
+<!--            <section class="widget widget-height-xs">-->
+<!--                <section class="feed-item">-->
+<!--                    <div class="icon pull-left">-->
+<!--                        <i class="fa fa-money"></i>-->
+<!--                    </div>-->
+<!--                    <div class="feed-item-body">-->
+<!--                        <div class="text">-->
+<!--                            <p>-->
+<!--                                Average price from {{all_exchanges|length}} exchanges:-->
+<!--                            </p>-->
+<!--                            <p>-->
+<!--                                <i class="fa fa-dollar color-green"></i>-->
+<!--                                <span class="num-md-white">{{filters.epic.data.usdt.last.avg_price|floatformat:-4}}</span>-->
+<!--                                {{filters.epic.data.usdt.last.percentage_change_24h|check_color|safe}}-->
+<!--                            </p>-->
+<!--                            <p>-->
+<!--                                <i class="fa fa-btc color-orange"></i>-->
+<!--                                <span class="num-md-white">{{filters.epic.data.btc.last.avg_price|floatformat:-8}}</span>-->
+<!--                                {{filters.epic.data.btc.last.percentage_change_24h|check_color|safe}}-->
+<!--                            </p>-->
+<!--                        </div>-->
+<!--                        <div class="pull-right text-muted show_hide">-->
+<!--                            {{filters.epic.data.last.0.updated|date:"jS M, H:i:s"}}-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </section>-->
+<!--            </section>-->
+<!--        </div>-->
+         <div class="col-lg-4">
             <section class="widget widget-height-xs">
                 <section class="feed-item">
                     <div class="icon pull-left">
-                        <i class="fa fa-percent"></i>
+                        <i class="fa fa-bar-chart-o"></i>
                     </div>
                     <div class="feed-item-body ">
                         <div class="text">
-                            <p>
-                                Percentage change:
-                            </p>
-                            <p>
-                                24 Hours:
-                                <span class="num-md-white">{{filters.epic.data.usdt.last.percentage_change_24h}}%</span>
-                                 {{filters.epic.data.usdt.last.percentage_change_24h|check_color|safe}}
-                            </p>
-                            <p>
-                                 7 Days:
-                                <span class="num-md-white">{{filters.epic.data.usdt.last.percentage_change_7d}}%</span>
-                                 {{filters.epic.data.usdt.last.percentage_change_7d|check_color|safe}}
-                            </p>
+                            <h5 class="card-title mt-1 pb-1 text-white text-truncate">
+                                <strong>Volume 24 hours</strong>
+                            </h5>
+                            <hr>
+                            <div class="row align-items-center mb-3">
+                                <div class="col-auto">
+                                    <span class="my-2 mr-2 py-1" style="font-size: 2.2rem;">
+                                        <strong>
+                                            <img class="img px-1" src="/static/imgs/btn1.png" alt="" height="25">
+                                            75,051
+                                        </strong>
+                                    </span>
+                                        Worth:
+                                    <i class="fa fa-dollar color-green"></i>
+                                    <span class="num-md-white mr-2">4,044</span>
+                                    <i class="fa fa-bitcoin color-orange"></i>
+                                    <span class="num-md-white">0.43</span>
+                                </div>
+                            </div> <!-- end row-->
+                            <div class="pull-left mt-2">
+                                <span class="text-light" style="font-size: 1.5rem; font-weight: bold;">
+                                    0.99%
+                                </span>
+                                 of circulating supply
+                            </div>
                         </div>
                     </div>
                 </section>
             </section>
         </div>
+<!--        <div class="col-lg-4">-->
+<!--            <section class="widget widget-height-xs">-->
+<!--                <section class="feed-item">-->
+<!--                    <div class="icon pull-left">-->
+<!--                        <i class="fa fa-percent"></i>-->
+<!--                    </div>-->
+<!--                    <div class="feed-item-body ">-->
+<!--                        <div class="text">-->
+<!--                            <p>-->
+<!--                                Percentage change:-->
+<!--                            </p>-->
+<!--                            <p>-->
+<!--                                24 Hours:-->
+<!--                                <span class="num-md-white">{{filters.epic.data.usdt.last.percentage_change_24h}}%</span>-->
+<!--                                 {{filters.epic.data.usdt.last.percentage_change_24h|check_color|safe}}-->
+<!--                            </p>-->
+<!--                            <p>-->
+<!--                                 7 Days:-->
+<!--                                <span class="num-md-white">{{filters.epic.data.usdt.last.percentage_change_7d}}%</span>-->
+<!--                                 {{filters.epic.data.usdt.last.percentage_change_7d|check_color|safe}}-->
+<!--                            </p>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </section>-->
+<!--            </section>-->
+<!--        </div>-->
         <div class="col-lg-4">
             <section class="widget widget-height-xs">
                 <section class="feed-item">
@@ -178,30 +305,70 @@
                         <i class="fa fa-bar-chart-o"></i>
                     </div>
                     <div class="feed-item-body">
-                        <div class="text py-1">
-                            <p>
-                               Volume 24 hours:
-                               <img class="img px-1" src="{% static 'imgs/btn1.png' %}" alt="" height="17">
-                               <span class="num-md-white">{{volumes.total.all|floatformat:0|intcomma}}</span>
-                            </p>
-                            <p>
-                                Worth:
-                                <i class="fa fa-dollar color-green"></i>
-                                <span class="num-md-white">{{volumes.total.all|epic_to:'usdt'|floatformat:0|intcomma}}</span>
-                                 ||
-                                <i class="fa fa-bitcoin color-orange"></i>
-                                <span class="num-md-white">{{volumes.total.all|epic_to:'btc'|floatformat:-2}}</span>
-                            </p>
-                            <p>
-                                <span class="num-md-white">
-                                    {{volumes.total.all|get_percent:filters.epic.explorer.circulating}}
-                                </span> % of circulating supply
-                            </p>
-                        </div>
+                        <h5 class="card-title mt-1 pb-1 text-white text-truncate">
+                                <strong>Market Capitalization</strong>
+                            </h5>
+                            <hr>
+                            <div class="row align-items-center mb-3">
+                                <div class="col-auto">
+                                    <span class="my-2 mr-2 py-1" style="font-size: 2.2rem;">
+                                        <strong>
+                                            <i class="fa fa-dollar dollar-color"></i>
+                                            409,947
+                                        </strong>
+                                    </span>
+                                </div>
+                                <div class="col-6">
+                                    <span class="my-2 mr-2 py-1" style="font-size: 2.2rem;">
+                                        <strong>
+                                            <i class="fa fa-bitcoin color-orange ml-3"></i>
+                                            43.819
+                                        </strong>
+                                    </span>
+                                </div>
+                            </div> <!-- end row-->
+                            <div class="pull-left mt-2" style="text-decoration: line-through;">
+                               <span class="mr-2  color-green" style="font-size: 1.5rem; font-weight: bold;">
+                                        <i class="fa fa-arrow-up color-green"></i>
+                                        5.37%
+                                </span>
+                                change in last 24 hours.
+                            </div>
                     </div>
                 </section>
             </section>
         </div>
+<!--        <div class="col-lg-4">-->
+<!--            <section class="widget widget-height-xs">-->
+<!--                <section class="feed-item">-->
+<!--                    <div class="icon pull-left">-->
+<!--                        <i class="fa fa-bar-chart-o"></i>-->
+<!--                    </div>-->
+<!--                    <div class="feed-item-body">-->
+<!--                        <div class="text py-1">-->
+<!--                            <p>-->
+<!--                               Volume 24 hours:-->
+<!--                               <img class="img px-1" src="{% static 'imgs/btn1.png' %}" alt="" height="17">-->
+<!--                               <span class="num-md-white">{{volumes.total.all|floatformat:0|intcomma}}</span>-->
+<!--                            </p>-->
+<!--                            <p>-->
+<!--                                Worth:-->
+<!--                                <i class="fa fa-dollar color-green"></i>-->
+<!--                                <span class="num-md-white">{{volumes.total.all|epic_to:'usdt'|floatformat:0|intcomma}}</span>-->
+<!--                                 ||-->
+<!--                                <i class="fa fa-bitcoin color-orange"></i>-->
+<!--                                <span class="num-md-white">{{volumes.total.all|epic_to:'btc'|floatformat:-2}}</span>-->
+<!--                            </p>-->
+<!--                            <p>-->
+<!--                                <span class="num-md-white">-->
+<!--                                    {{volumes.total.all|get_percent:filters.epic.explorer.circulating}}-->
+<!--                                </span> % of circulating supply-->
+<!--                            </p>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </section>-->
+<!--            </section>-->
+<!--        </div>-->
     </div>
     <div class="row">
         <div class="col-lg-6" >
@@ -525,7 +692,36 @@
 </div>
 
 <!--        RIGHT SIDE PANELS-->
+
 <div class="col-lg-3">
+    <section class="widget bg-dark">
+        <div class="body">
+            <div class="wrapper">
+                <section class="feed-item">
+                    <div class="pull-left">
+                        <i class="fa fa-clock-o color-orange mt-1" style="font-size: 2.5rem;"></i>
+                    </div>
+                    <div class="feed-item-body">
+                        <div class="text py-1" style="font-size: 1.5rem;">
+                            <p>
+                                Next halving:
+                                <strong>21st Jun, 06:09 BST</strong>
+                            </p>
+                            <p>
+                                At block height: <strong>480,960</strong>
+                            </p>
+                            <p>
+                                <strong>
+                                    <i class="fa fa-history text-light mr-2"></i>
+                                    3 days, 4 hours
+                                </strong> left.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
     <section class="widget">
         <div class="body">
             <div class="wrapper">
