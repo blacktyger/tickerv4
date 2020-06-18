@@ -26,14 +26,10 @@
         }
     }
     .dollar-color {
-        color: rgb(107,142,35);
+        color: rgb(159, 223, 159);
     }
     .card-title{
         font-color: white;
-    }
-    .show_hide {
-        visibility: visible;
-<!--        visibility: hidden;-->
     }
     .widget {
         border-radius: 8px;
@@ -91,7 +87,7 @@
                             <img class="img pl-3 pr-1" src="{{coin.coingecko.last.data.img}}" height="25">
                             <i class="fa fa-dollar"></i>
                             {{coin.coingecko.last.data.price|floatformat:-1|intcomma}}
-                            {{coin.coingecko.last.data.change_24h|check_color|safe}}
+                            {{coin.coingecko.last.data.change_24h|check_arrow|safe}}
                             {% endfor %}
                         </div>
                         <div class="col-lg-5 my-2 text-right">
@@ -180,7 +176,7 @@
                                     <span class="my-2 py-1" style="font-size: 2.2rem;">
                                         <strong>
                                             <i class="fa fa-dollar dollar-color"></i>
-                                            0.0539
+                                            {{filters.epic.data.usdt.last.avg_price|floatformat:-4}}
                                         </strong>
                                     </span>
                                 </div>
@@ -188,15 +184,16 @@
                                     <span class="my-2 py-1" style="font-size: 2.2rem;">
                                         <strong>
                                             <i class="fa fa-bitcoin color-orange"></i>
-                                            0.00000576
-                                        </strong>
+                                            {{filters.epic.data.btc.last.avg_price|floatformat:-8}}
+                                       </strong>
                                     </span>
                                 </div>
                             </div> <!-- end row-->
                             <div class="pull-left mt-2">
-                               <span class="mr-2 color-green" style="font-size: 1.5rem; font-weight: bold;">
-                                        <i class="fa fa-arrow-up color-green"></i>
-                                        5.37%
+                               <span class="mr-2 color-{{filters.epic.data.usdt.last.percentage_change_24h|check_color}}" style="font-size: 1.5rem; font-weight: bold;">
+<!--                                        <i class="fa fa-arrow-up color-green"></i>-->
+                                       {{filters.epic.data.usdt.last.percentage_change_24h}}
+                                    {{filters.epic.data.usdt.last.percentage_change_24h|check_arrow|safe}}
                                 </span>
                                 change in last 24 hours.
                             </div>
@@ -205,36 +202,7 @@
                 </section>
             </section>
         </div>
-<!--        <div class="col-lg-4">-->
-<!--            <section class="widget widget-height-xs">-->
-<!--                <section class="feed-item">-->
-<!--                    <div class="icon pull-left">-->
-<!--                        <i class="fa fa-money"></i>-->
-<!--                    </div>-->
-<!--                    <div class="feed-item-body">-->
-<!--                        <div class="text">-->
-<!--                            <p>-->
-<!--                                Average price from {{all_exchanges|length}} exchanges:-->
-<!--                            </p>-->
-<!--                            <p>-->
-<!--                                <i class="fa fa-dollar color-green"></i>-->
-<!--                                <span class="num-md-white">{{filters.epic.data.usdt.last.avg_price|floatformat:-4}}</span>-->
-<!--                                {{filters.epic.data.usdt.last.percentage_change_24h|check_color|safe}}-->
-<!--                            </p>-->
-<!--                            <p>-->
-<!--                                <i class="fa fa-btc color-orange"></i>-->
-<!--                                <span class="num-md-white">{{filters.epic.data.btc.last.avg_price|floatformat:-8}}</span>-->
-<!--                                {{filters.epic.data.btc.last.percentage_change_24h|check_color|safe}}-->
-<!--                            </p>-->
-<!--                        </div>-->
-<!--                        <div class="pull-right text-muted show_hide">-->
-<!--                            {{filters.epic.data.last.0.updated|date:"jS M, H:i:s"}}-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </section>-->
-<!--            </section>-->
-<!--        </div>-->
-         <div class="col-lg-4">
+        <div class="col-lg-4">
             <section class="widget widget-height-xs">
                 <section class="feed-item">
                     <div class="icon pull-left">
@@ -251,19 +219,23 @@
                                     <span class="my-2 mr-2 py-1" style="font-size: 2.2rem;">
                                         <strong>
                                             <img class="img px-1" src="/static/imgs/btn1.png" alt="" height="25">
-                                            75,051
+                                            {{volumes.total.all|floatformat:0|intcomma}}
                                         </strong>
                                     </span>
                                         Worth:
-                                    <i class="fa fa-dollar color-green"></i>
-                                    <span class="num-md-white mr-2">4,044</span>
+                                    <i class="fa fa-dollar dollar-color"></i>
+                                    <span class="num-md-white mr-2">
+                                        {{volumes.total.all|epic_to:'usdt'|floatformat:0|intcomma}}
+                                    </span>
                                     <i class="fa fa-bitcoin color-orange"></i>
-                                    <span class="num-md-white">0.43</span>
+                                    <span class="num-md-white">
+                                        {{volumes.total.all|epic_to:'btc'|floatformat:3|intcomma}}
+                                    </span>
                                 </div>
                             </div> <!-- end row-->
                             <div class="pull-left mt-2">
                                 <span class="text-light" style="font-size: 1.5rem; font-weight: bold;">
-                                    0.99%
+                                    {{volumes.total.all|get_percent:filters.epic.explorer.circulating}}
                                 </span>
                                  of circulating supply
                             </div>
@@ -272,32 +244,6 @@
                 </section>
             </section>
         </div>
-<!--        <div class="col-lg-4">-->
-<!--            <section class="widget widget-height-xs">-->
-<!--                <section class="feed-item">-->
-<!--                    <div class="icon pull-left">-->
-<!--                        <i class="fa fa-percent"></i>-->
-<!--                    </div>-->
-<!--                    <div class="feed-item-body ">-->
-<!--                        <div class="text">-->
-<!--                            <p>-->
-<!--                                Percentage change:-->
-<!--                            </p>-->
-<!--                            <p>-->
-<!--                                24 Hours:-->
-<!--                                <span class="num-md-white">{{filters.epic.data.usdt.last.percentage_change_24h}}%</span>-->
-<!--                                 {{filters.epic.data.usdt.last.percentage_change_24h|check_color|safe}}-->
-<!--                            </p>-->
-<!--                            <p>-->
-<!--                                 7 Days:-->
-<!--                                <span class="num-md-white">{{filters.epic.data.usdt.last.percentage_change_7d}}%</span>-->
-<!--                                 {{filters.epic.data.usdt.last.percentage_change_7d|check_color|safe}}-->
-<!--                            </p>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </section>-->
-<!--            </section>-->
-<!--        </div>-->
         <div class="col-lg-4">
             <section class="widget widget-height-xs">
                 <section class="feed-item">
@@ -314,7 +260,7 @@
                                     <span class="my-2 mr-2 py-1" style="font-size: 2.2rem;">
                                         <strong>
                                             <i class="fa fa-dollar dollar-color"></i>
-                                            409,947
+                                            {{filters.epic.explorer.circulating|epic_to:'usdt'|floatformat:0|intcomma}}
                                         </strong>
                                     </span>
                                 </div>
@@ -322,7 +268,7 @@
                                     <span class="my-2 mr-2 py-1" style="font-size: 2.2rem;">
                                         <strong>
                                             <i class="fa fa-bitcoin color-orange ml-3"></i>
-                                            43.819
+                                            {{filters.epic.explorer.circulating|epic_to:'btc'|floatformat:-3|intcomma}}
                                         </strong>
                                     </span>
                                 </div>
@@ -330,7 +276,7 @@
                             <div class="pull-left mt-2" style="text-decoration: line-through;">
                                <span class="mr-2  color-green" style="font-size: 1.5rem; font-weight: bold;">
                                         <i class="fa fa-arrow-up color-green"></i>
-                                        5.37%
+                                        {{volumes.total.all|get_percent:filters.epic.explorer.circulating}}
                                 </span>
                                 change in last 24 hours.
                             </div>
@@ -338,37 +284,6 @@
                 </section>
             </section>
         </div>
-<!--        <div class="col-lg-4">-->
-<!--            <section class="widget widget-height-xs">-->
-<!--                <section class="feed-item">-->
-<!--                    <div class="icon pull-left">-->
-<!--                        <i class="fa fa-bar-chart-o"></i>-->
-<!--                    </div>-->
-<!--                    <div class="feed-item-body">-->
-<!--                        <div class="text py-1">-->
-<!--                            <p>-->
-<!--                               Volume 24 hours:-->
-<!--                               <img class="img px-1" src="{% static 'imgs/btn1.png' %}" alt="" height="17">-->
-<!--                               <span class="num-md-white">{{volumes.total.all|floatformat:0|intcomma}}</span>-->
-<!--                            </p>-->
-<!--                            <p>-->
-<!--                                Worth:-->
-<!--                                <i class="fa fa-dollar color-green"></i>-->
-<!--                                <span class="num-md-white">{{volumes.total.all|epic_to:'usdt'|floatformat:0|intcomma}}</span>-->
-<!--                                 ||-->
-<!--                                <i class="fa fa-bitcoin color-orange"></i>-->
-<!--                                <span class="num-md-white">{{volumes.total.all|epic_to:'btc'|floatformat:-2}}</span>-->
-<!--                            </p>-->
-<!--                            <p>-->
-<!--                                <span class="num-md-white">-->
-<!--                                    {{volumes.total.all|get_percent:filters.epic.explorer.circulating}}-->
-<!--                                </span> % of circulating supply-->
-<!--                            </p>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </section>-->
-<!--            </section>-->
-<!--        </div>-->
     </div>
     <div class="row">
         <div class="col-lg-6" >
@@ -378,29 +293,29 @@
                         <i class="fa fa-line-chart"></i>
                     </div>
                     <div class="feed-item-body">
-                        <div class="text mx-0 px-0">
-                            <p>
-                                In last 7 days:
+                        <div class="text mx-0 px-2">
+                            <p class="card-title mb-2 pb-1 text-white text-truncate">
+                                <strong>In last 7 days:</strong>
                             </p>
-                            <p>
+                            <p style="font-size: 1.4rem;">
                                 {% for key, value in high_low_7d.items %}
                                     {{key.capitalize}}:
                                 <i class="fa fa-dollar
                                               {% if key == 'low' %}
-                                              color-red
+                                              color-orange
                                               {% elif key == 'high' %}
                                               color-green
                                               {% elif key == 'average' %}
-                                              color-blue
+                                              text-info
                                               {% endif %}
                                                         "></i>
-                                <span class="num-xs-white mr-3">{{value|floatformat:-4}}</span>
+                                <strong>{{value|floatformat:-4}}</strong>
                                 {% endfor %}
                             </p>
                         </div>
                     </div>
                 </section>
-                <div class="graphs mt-2 mb-2">
+                <div class="graphs mt-2 mb-3">
                     {{ filters.charts.epic_7d_price.div | safe }}
                     {{ filters.charts.epic_7d_price.script | safe }}
                 </div>
@@ -408,9 +323,6 @@
                     Average price 7 days from exchanges powered by
                     <a href="https://www.coingecko.com/en/coins/epic-cash" target="_blank">CoinGecko.com </a></small></h4>
                 </p>
-                <div class="pull-right show_hide">
-                            {{filters.charts.epic_7d_price.updated|date:"jS M, H:i:s"}}
-                </div>
             </section>
         </div>
         <div class="col-lg-6">
@@ -421,7 +333,9 @@
                     </div>
                     <div class="feed-item-body">
                         <div class="text">
-                            Volume in last 24 hours details
+                            <p class="card-title mb-2 pb-1 text-white text-truncate">
+                                <strong>Volume in last 24 hours details</strong>
+                            </p>
                         </div>
                     </div>
                 </section>
@@ -441,14 +355,14 @@
                                             <i class="fa fa-bitcoin color-orange"></i>
                                             {{v.0|epic_to:'btc'|floatformat:-2|intcomma}}
                                          ||
-                                            <i class="fa fa-dollar color-green"></i>
+                                            <i class="fa fa-dollar dollar-color"></i>
                                             {{v.0|epic_to:'usdt'|floatformat:0|intcomma}}
                                         {% elif k == 'usdt' %}
                                             USD(T) worth:
                                             <i class="fa fa-bitcoin color-orange"></i>
                                             {{v.0|epic_to:'btc'|floatformat:-2|intcomma}}
                                          ||
-                                            <i class="fa fa-dollar color-green"></i>
+                                            <i class="fa fa-dollar dollar-color"></i>
                                             {{v.0|epic_to:'usdt'|floatformat:0|intcomma}}
                                         {% endif %}
                                     </div>
@@ -459,7 +373,7 @@
                                     {% if k == 'btc' %}
                                         <i class="fa fa-bitcoin color-orange"></i>
                                     {% elif k == 'usdt' %}
-                                        <i class="fa fa-dollar color-green"></i>
+                                        <i class="fa fa-dollar dollar-color"></i>
                                     {% endif %}
                                 </div>
                                 <div class="feed-item-body">
@@ -528,9 +442,6 @@
                                                 {% endif %}
                                             {% endfor %}
                                             </div>
-                                        </div>
-                                        <div class="pull-right show_hide">
-                                            {{filters.exchanges.citex.tickers.all.last.updated|date:"jS M, H:i:s"}}
                                         </div>
                                     </div>
                                 </div>
@@ -646,9 +557,6 @@
                         <a href="https://www.coingecko.com/" target="_blank"></small> CoinGecko.com</a>
                     </h4>
                     <div class="widget-controls">
-                        <div class="show_hide">
-                        Last Update: {{filters.epic.gecko.updated|date:"jS M, H:i:s"}}
-                        </div>
                     </div>
                 </header>
                 <div class="widget-table-overflow">
@@ -705,15 +613,16 @@
                         <div class="text py-1" style="font-size: 1.5rem;">
                             <p>
                                 Next halving:
-                                <strong>21st Jun, 06:09 BST</strong>
+                                <strong>{{halving|date:"jS M, H:i T"}}</strong>
                             </p>
                             <p>
-                                At block height: <strong>480,960</strong>
+                                At block height:
+                                <strong>480,960</strong>
                             </p>
                             <p>
                                 <strong>
                                     <i class="fa fa-history text-light mr-2"></i>
-                                    3 days, 4 hours
+                                    {{ halving|timeuntil}}
                                 </strong> left.
                             </p>
                         </div>
@@ -738,7 +647,7 @@
                             </p>
                             <p>
                                 Worth:
-                                <i class="fa fa-dollar color-green"></i>
+                                <i class="fa fa-dollar dollar-color"></i>
                                 <span class="num-md-white">
                                     {{filters.epic.explorer.circulating|epic_to:'usdt'|floatformat:0|intcomma}}</span>
                                  ||
@@ -773,7 +682,7 @@
                         </div>
                         <div>
                             Worth:
-                            <i class="fa fa-dollar color-green"></i>
+                            <i class="fa fa-dollar dollar-color"></i>
                             <span class="num-md-white">{{daily_mined|epic_to:'usdt'|floatformat:0|intcomma}}</span>
                               ||
                             <i class="fa fa-bitcoin color-orange"></i>
@@ -796,8 +705,8 @@
                                 <span class="num-md-white">{{filters.epic.explorer.height|intcomma}}</span> blocks.
                             </p>
                             <p>
-                                Block Subsidy Value: <i class="fa fa-dollar color-green"></i>
-                                <span class="num-md-white">{{filters.epic.explorer.block_value|floatformat:-2}}</span>
+                                Block Subsidy Value: <i class="fa fa-dollar dollar-color"></i>
+                                <span class="num-md-white">{{filters.epic.data.usdt.last.block_value|floatformat:-2}}</span>
                             </p>
                         </div>
                     </div>
@@ -843,12 +752,12 @@
                             {% if k.pair == 'btc' %}
                             <i class="fa fa-bitcoin color-orange"></i>
                             {% elif k.pair == 'usdt' %}
-                            <i class="fa fa-dollar color-green"></i>
+                            <i class="fa fa-dollar dollar-color"></i>
                             {% endif %}
                             <span class="num-md-white"> {{k.ath}} </span>
                              ||
                             <span class="num-md-white"> {{k.ath_change}} </span> %
-                            {{k.ath_change|check_color|safe}}
+                            {{k.ath_change|check_arrow|safe}}
                         </p>
                     {% endfor %}
                     <p>

@@ -9,12 +9,12 @@ from django.template import loader
 from django.http import HttpResponse
 
 from .models import *
-from app.templatetags.calculations import daily_mined, \
+from .templatetags.calculations import daily_mined, \
     high_low_7d
-from app.coins.data import coins, all_coins, filters,\
-    all_exchanges, models, EXCHANGES, volumes, links, \
-    update
+from .coins.data import coins, all_coins, filters,\
+    all_exchanges, models, EXCHANGES, volumes, links
 from .globals import pairs
+from .templatetags.calculations import halving
 
 
 def index(request):
@@ -34,6 +34,7 @@ def index(request):
     context = {
         'coins_list': all_coins(),
         'currency': Currency.objects.all(),
+        'halving': halving(models()['epic']),
         'mw_data': mw_data,
         'targets': pairs,
         'ex_tickers': exchange_data,

@@ -2,43 +2,42 @@ from datetime import timedelta
 from time import monotonic
 
 from .models import *
-from app.templatetags.calculations import daily_mined, \
+from .templatetags.calculations import daily_mined, \
     high_low_7d
-from app.coins.data import *
-from app.coins.charts import *
+from .coins.data import *
 from background_task import background
-from app.coins.charts import main_charts, mw_charts
+from .coins.charts import main_charts, mw_charts
 from .globals import pairs
 
 
-@background(schedule=1)
-def update_10():
+def update(tasks, save=False):
     start_time = monotonic()
-    for exchange in all_exchanges():
-        exchange_details(exchange)
-    coingecko_data()
-    currency_data()
+    print(f"[{timezone.now().strftime('%H:%M:%S')}] START >> {[str(task).split(' ')[1] for task in tasks]}")
+    for task in list(tasks):
+        task(save=save)
+        # print(f"{str(task).split(' ')[1]}")
+
     end_time = monotonic()
-    return print(f'[EXCHANGE | COINGECKO | CURRENCY] {timezone.now()} | {timedelta(seconds=end_time - start_time)}')
+    return print(f"[{timezone.now().strftime('%H:%M:%S')}] END >> TIME: {timedelta(seconds=end_time - start_time).total_seconds()} SECONDS")
 
 
-@background(schedule=1)
-def update_2():
-    start_time = monotonic()
-    citex_data()
-    vitex_data()
-    main_charts()
-    mw_charts()
-    end_time = monotonic()
-    return print(f'[CITEX | VITEX] {timezone.now()} | {timedelta(seconds=end_time - start_time)}')
+@background(schedule=120)
+def up_data1():
+    tasks = [coingecko_data, explorer_data, currency_data]
+    update(tasks)
+    return f'OK'
 
 
-@background(schedule=1)
-def update_1():
-    start_time = monotonic()
-    pool_data()
-    explorer_data()
-    epic_data()
-    end_time = monotonic()
-    return print(f'[POOL | EXPLORER | EPIC] {timezone.now()} | {timedelta(seconds=end_time - start_time)}')
+@background(schedule=300)
+def up_exchanges():
+    tasks = [citex_data, vitex_data]
+    update(tasks)
+    return f'OK'
+
+
+@background(schedule=60)
+def up_data2():
+    tasks = [epic_data, mw_charts, main_charts]
+    update(tasks)
+    return f'OK'
 

@@ -25,7 +25,7 @@ colors = {
     }
 
 
-def main_charts():
+def main_charts(save=False):
     ### --------- PRICE CHART
 
     data = {
@@ -128,7 +128,7 @@ def main_charts():
     return f'Main charts updated successfully!'
 
 
-def mw_charts():
+def mw_charts(save=False):
     for i, coin in enumerate(all_coins()):
         if coin.mw_coin:
             data = {

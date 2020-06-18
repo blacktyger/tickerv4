@@ -154,7 +154,7 @@ def filters():
         }
 
 
-def exchange_details(exchange):
+def exchange_details(exchange, save=False):
     start_time = monotonic()
     data = {key: value for key, value in
             cg.get_exchanges_by_id(exchange.name).items() if key != 'tickers'}
@@ -163,7 +163,7 @@ def exchange_details(exchange):
     return f"Exchange Details saved in db {timedelta(seconds=end_time - start_time)}"
 
 
-def currency_data():
+def currency_data(save=False):
     start_time = monotonic()
 
     def get_rates():
@@ -188,7 +188,7 @@ def currency_data():
 def coingecko_data(save=False):
     start_time = monotonic()
     for coin in all_coins():
-        print(f"{coin}...")
+        # print(f"{coin}...")
         source = copy.deepcopy(cg.get_coin_by_id(coin.name))
         data = {
             'name': source['name'].capitalize(),
@@ -240,8 +240,8 @@ def citex_data(save=False):
         typ = '&type=' + ty
         url = start_url + query + symbol + size + typ
         if breaks:
-            sleep(1.5)
-        print(f"{url}...")
+            sleep(1.3)
+        # print(f"{url}...")
         return json.loads(requests.get(url).content)
 
     data = {target: {} for target in PAIRS}
@@ -251,11 +251,10 @@ def citex_data(save=False):
         for target in PAIRS:
             vol = [d(x[::5][1]) for x in citex_api('candles', sym='epic_' + target, si="24", ty="60", breaks=True)]
             vol = sum(vol)
-            sleep(2)
             for tick in source:
                 if tick['symbol'] == coin.symbol.lower() + '_' + target:
                     data[target].update(tick)
-                    sleep(1.5)
+                    sleep(1.3)
 
             update = {
                 'id': int(len(Ticker.objects.all())) + 1,
@@ -312,7 +311,7 @@ def vitex_data(save=False):
             url = start_url + query + symbol + extra
         else:
             url = start_url + query + symbol
-        print(f"{url}...")
+        # print(f"{url}...")
         if breaks:
             sleep(1.5)
         return json.loads(requests.get(url).content)
@@ -438,14 +437,14 @@ def epic_data(save=False):
         for target in PAIRS:
             if target == currency:
                 prices.append(avg(source[target]))
-                print(sum(source[target]))
+                # print(sum(source[target]))
             else:
                 if currency == 'usdt':
                     prices.append(btc_to_usd(avg(source[target])))
-                    print(sum(source[target]))
+                    # print(sum(source[target]))
                 elif currency == "btc":
                     prices.append(usd_to_btc(avg(source[target])))
-                    print(sum(source[target]))
+                    # print(sum(source[target]))
         return avg(prices)
 
     for target in PAIRS:
@@ -516,17 +515,17 @@ def volumes():
             }}
 
 
-def update(save=False):
-    start_time = monotonic()
-    for exchange in all_exchanges():
-        exchange_details(exchange)
-    coingecko_data(save=save)
-    citex_data(save=save)
-    vitex_data(save=save)
-    sleep(1.2)
-    pool_data()
-    explorer_data(save=save)
-    currency_data()
-    epic_data(save=save)
-    end_time = monotonic()
-    return print(f"*** ALL UPDATES DONE *** {timedelta(seconds=end_time - start_time)}")
+# def update(save=False):
+#     start_time = monotonic()
+#     for exchange in all_exchanges():
+#         exchange_details(exchange)
+#     coingecko_data(save=save)
+#     citex_data(save=save)
+#     vitex_data(save=save)
+#     sleep(1.2)
+#     pool_data()
+#     explorer_data(save=save)
+#     currency_data()
+#     epic_data(save=save)
+#     end_time = monotonic()
+#     return print(f"*** ALL UPDATES DONE *** {timedelta(seconds=end_time - start_time)}")
