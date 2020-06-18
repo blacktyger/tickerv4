@@ -160,6 +160,39 @@
 <div class="col-lg-9">
     <div class="row-flex row">
         <div class="col-lg-4">
+            <section class="widget bg-dark">
+                <div class="body">
+                    <div class="wrapper">
+                        <section class="feed-item">
+                            <div class="pull-left">
+                                <i class="fa fa-clock-o color-orange mt-1" style="font-size: 2.5rem;"></i>
+                            </div>
+                            <div class="feed-item-body">
+                                <div class="text py-1" style="font-size: 1.5rem;">
+                                    <p>
+                                        <strong>
+                                        <span class="text-warning">Next halving:</span>
+                                        {{halving|date:"jS M, H:i T"}}
+                                        </strong>
+                                    </p>
+                                    <p>
+                                        At block height:
+                                        <strong>480,960</strong>
+                                    </p>
+                                    <p>
+                                        <strong>
+                                            <i class="fa fa-history text-warning mr-2"></i>
+                                            {{ halving|timeuntil}}
+                                        </strong> left.
+                                    </p>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div class="col-lg-4">
             <section class="widget widget-height-xs">
                 <section class="feed-item">
                     <div class="icon pull-left">
@@ -240,46 +273,6 @@
                                  of circulating supply
                             </div>
                         </div>
-                    </div>
-                </section>
-            </section>
-        </div>
-        <div class="col-lg-4">
-            <section class="widget widget-height-xs">
-                <section class="feed-item">
-                    <div class="icon pull-left">
-                        <i class="fa fa-bar-chart-o"></i>
-                    </div>
-                    <div class="feed-item-body">
-                        <h5 class="card-title mt-1 pb-1 text-white text-truncate">
-                                <strong>Market Capitalization</strong>
-                            </h5>
-                            <hr>
-                            <div class="row align-items-center mb-3">
-                                <div class="col-auto">
-                                    <span class="my-2 mr-2 py-1" style="font-size: 2.2rem;">
-                                        <strong>
-                                            <i class="fa fa-dollar dollar-color"></i>
-                                            {{filters.epic.explorer.circulating|epic_to:'usdt'|floatformat:0|intcomma}}
-                                        </strong>
-                                    </span>
-                                </div>
-                                <div class="col-6">
-                                    <span class="my-2 mr-2 py-1" style="font-size: 2.2rem;">
-                                        <strong>
-                                            <i class="fa fa-bitcoin color-orange ml-3"></i>
-                                            {{filters.epic.explorer.circulating|epic_to:'btc'|floatformat:-3|intcomma}}
-                                        </strong>
-                                    </span>
-                                </div>
-                            </div> <!-- end row-->
-                            <div class="pull-left mt-2" style="text-decoration: line-through;">
-                               <span class="mr-2  color-green" style="font-size: 1.5rem; font-weight: bold;">
-                                        <i class="fa fa-arrow-up color-green"></i>
-                                        {{volumes.total.all|get_percent:filters.epic.explorer.circulating}}%
-                                </span>
-                                change in last 24 hours.
-                            </div>
                     </div>
                 </section>
             </section>
@@ -602,34 +595,43 @@
 <!--        RIGHT SIDE PANELS-->
 
 <div class="col-lg-3">
-    <section class="widget bg-dark">
-        <div class="body">
-            <div class="wrapper">
-                <section class="feed-item">
-                    <div class="pull-left">
-                        <i class="fa fa-clock-o color-orange mt-1" style="font-size: 2.5rem;"></i>
-                    </div>
-                    <div class="feed-item-body">
-                        <div class="text py-1" style="font-size: 1.5rem;">
-                            <p>
-                                Next halving:
-                                <strong>{{halving|date:"jS M, H:i T"}}</strong>
-                            </p>
-                            <p>
-                                At block height:
-                                <strong>480,960</strong>
-                            </p>
-                            <p>
-                                <strong>
-                                    <i class="fa fa-history text-light mr-2"></i>
-                                    {{ halving|timeuntil}}
-                                </strong> left.
-                            </p>
-                        </div>
-                    </div>
-                </section>
+    <section class="widget widget-height-xs">
+        <section class="feed-item">
+            <div class="icon pull-left">
+                <i class="fa fa-bar-chart-o"></i>
             </div>
-        </div>
+            <div class="feed-item-body">
+                <h5 class="card-title mt-1 pb-1 text-white text-truncate">
+                        <strong>Market Capitalization</strong>
+                    </h5>
+                    <hr>
+                    <div class="row align-items-center mb-3">
+                        <div class="col-auto">
+                            <span class="my-2 mr-2 py-1" style="font-size: 2.2rem;">
+                                <strong>
+                                    <i class="fa fa-dollar dollar-color"></i>
+                                    {{filters.epic.explorer.circulating|epic_to:'usdt'|floatformat:0|intcomma}}
+                                </strong>
+                            </span>
+                        </div>
+                        <div class="col-6">
+                            <span class="my-2 mr-2 py-1" style="font-size: 2.2rem;">
+                                <strong>
+                                    <i class="fa fa-bitcoin color-orange ml-3"></i>
+                                    {{filters.epic.explorer.circulating|epic_to:'btc'|floatformat:-3|intcomma}}
+                                </strong>
+                            </span>
+                        </div>
+                    </div> <!-- end row-->
+                    <div class="pull-left mt-2" style="text-decoration: line-through;">
+                       <span class="mr-2  color-green" style="font-size: 1.5rem; font-weight: bold;">
+                                <i class="fa fa-arrow-up color-green"></i>
+                                {{volumes.total.all|get_percent:filters.epic.explorer.circulating}}%
+                        </span>
+                        change in last 24 hours.
+                    </div>
+            </div>
+        </section>
     </section>
     <section class="widget">
         <div class="body">
