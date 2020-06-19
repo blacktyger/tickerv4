@@ -34,6 +34,11 @@ def get_dash(mapping, key):
 
 
 @register.filter()
+def minus_back(value, num):
+    return d(num) - d(value)
+
+
+@register.filter()
 def add(value, num):
     return d(value) + d(num)
 
@@ -72,7 +77,8 @@ def epic_to(value, target):
 def daily_mined(coin):
     block_time = d(coin.explorer.last().average_blocktime)
     block_reward = d(coin.explorer.last().reward)
-    return d((86400 / block_time) * block_reward, 0)
+    return {'coins': d((86400 / block_time) * block_reward, 0),
+            'blocks': d(86400 / block_time, 0)}
 
 
 def halving(coin):
@@ -87,8 +93,8 @@ def halving(coin):
     return date
 
 
-def high_low_7d(coin):
-    data = [p for t, p in get_gecko(coin).data['price_7d']]
+def high_low_7d(coin, target=""):
+    data = [p for t, p in get_gecko(coin).data['price_7d'+target]]
     return {
         'low': min(data),
         'high': max(data),

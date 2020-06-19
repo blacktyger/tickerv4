@@ -42,6 +42,7 @@ def index(request):
         'volumes': volumes(),
         'daily_mined': daily_mined(models()['epic']),
         'high_low_7d': high_low_7d(models()['epic']),
+        'high_low_7d_btc': high_low_7d(models()['epic'], '_btc'),
         'filters': filters(),
         'links': Link.objects.all(),
         'other_coins': [coin for coin in all_coins() if not coin.mw_coin]

@@ -198,6 +198,7 @@ def coingecko_data(save=False):
             'volume': d(source['market_data']['total_volume']['usd'], 2),
             'price': d(cg.get_price(coin.name, 'usd')[coin.name]['usd'], 4),
             'price_7d': cg.get_coin_market_chart_by_id(coin.name, 'usd', 7)['prices'],
+            'price_7d_btc': cg.get_coin_market_chart_by_id(coin.name, 'btc', 7)['prices'],
             'change_24h': d(source['market_data']['price_change_percentage_24h'], 2),
             'change_7d': d(source['market_data']['price_change_percentage_7d'], 2),
             'ath': {

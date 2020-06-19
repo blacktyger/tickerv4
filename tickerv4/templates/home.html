@@ -34,12 +34,15 @@
     .widget {
         border-radius: 8px;
     }
+    .text {
+        font-size: 1.4rem;
+    }
     .widget-hover:hover {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     }
     .num-md-white {
         font-weight: bold;
-        font-size: 1.4rem;
+        font-size: 1.5rem;
     }
     .num-xs-white {
         font-weight: bold;
@@ -160,36 +163,35 @@
 <div class="col-lg-9">
     <div class="row-flex row">
         <div class="col-lg-4">
-            <section class="widget bg-dark">
-                <div class="body">
-                    <div class="wrapper">
-                        <section class="feed-item">
-                            <div class="pull-left">
-                                <i class="fa fa-clock-o color-orange mt-1" style="font-size: 2.5rem;"></i>
-                            </div>
-                            <div class="feed-item-body">
-                                <div class="text py-1" style="font-size: 1.5rem;">
-                                    <p>
-                                        <strong>
-                                        <span class="text-warning">Next halving:</span>
-                                        {{halving|date:"jS M, H:i T"}}
-                                        </strong>
-                                    </p>
-                                    <p>
-                                        At block height:
-                                        <strong>480,960</strong>
-                                    </p>
-                                    <p>
-                                        <strong>
-                                            <i class="fa fa-history text-warning mr-2"></i>
-                                            {{ halving|timeuntil}}
-                                        </strong> left.
-                                    </p>
-                                </div>
-                            </div>
-                        </section>
+            <section class="widget bg-dark widget-height-xs">
+                <section class="feed-item">
+                    <div class="pull-left">
+                        <i class="fa fa-clock-o color-orange mt-1" style="font-size: 2.5rem;"></i>
                     </div>
-                </div>
+                    <div class="feed-item-body">
+                        <div class="text py-2" style="font-size: 1.5rem;">
+                            <p>
+                                <strong>
+                                <span class="text-warning">Next halving:</span>
+                                {{halving|date:"jS M, H:i T"}}
+                                </strong>
+                            </p>
+                            <p>
+                                At block height: <strong>480,960</strong>
+                            </p>
+                            <p>
+                                <strong>
+                                    <i class="fa fa-history text-warning mr-2"></i>
+                                    {{ halving|timeuntil}}
+                                </strong>
+                                <span class="text-warning">
+                                    (<strong>{{filters.epic.explorer.height|minus_back:480960|floatformat:0|intcomma}}
+                                    blocks</strong>)</span> left.
+
+                            </p>
+                        </div>
+                    </div>
+                </section>
             </section>
         </div>
         <div class="col-lg-4">
@@ -286,33 +288,74 @@
                         <i class="fa fa-line-chart"></i>
                     </div>
                     <div class="feed-item-body">
-                        <div class="text mx-0 px-2">
-                            <p class="card-title mb-2 pb-1 text-white text-truncate">
+                        <div class="text my-0 mx-0 px-2">
+                            <p class="card-title mb-0 pb-1 text-white text-truncate">
                                 <strong>In last 7 days:</strong>
                             </p>
-                            <p style="font-size: 1.4rem;">
-                                {% for key, value in high_low_7d.items %}
-                                    {{key.capitalize}}:
-                                <i class="fa fa-dollar
+                             <div class="row">
+                                 <div class="col-5">
+                                    <p>
+                                    Average price:
+                                    {% for key, value in high_low_7d.items %}
+                                        <strong>
+                                          {% if key == 'average' %}
+                                            <i class="fa fa-dollar dollar-color"></i>
+                                            <span> {{value|floatformat:-4}}</span>
+                                          {% endif %}
+                                        </strong>
+                                    {% endfor %}
+                                    </p>
+                                    <p style="font-size: 1.4rem;">
+                                        {% for key, value in high_low_7d.items %}
                                               {% if key == 'low' %}
-                                              color-orange
-                                              {% elif key == 'high' %}
-                                              color-green
-                                              {% elif key == 'average' %}
-                                              text-info
+                                                {{key.capitalize}}:
+                                                <span class="color-orange"> <strong>{{value|floatformat:-4}}</strong></span>
+                                                  {% elif key == 'high' %}
+                                                {{key.capitalize}}:
+                                                <span class="color-green"> <strong>{{value|floatformat:-4}}</strong></span>
                                               {% endif %}
-                                                        "></i>
-                                <strong>{{value|floatformat:-4}}</strong>
-                                {% endfor %}
+                                        {% endfor %}
+                                    </p>
+                                 </div>
+                                 <div class="col-7">
+                                     <p>
+                                        Average price:
+                                        {% for key, value in high_low_7d_btc.items %}
+                                            <strong>
+                                              {% if key == 'average' %}
+                                                <i class="fa fa-bitcoin color-orange"></i>
+                                                <span> {{value|floatformat:-8}}</span>
+                                              {% endif %}
+                                            </strong>
+                                        {% endfor %}
+                                     </p>
+                                     <p style="font-size: 1.4rem;">
+                                        {% for key, value in high_low_7d_btc.items %}
+                                                {% if key == 'high' %}
+                                                {{key.capitalize}}:
+                                                <span class="color-green"> <strong>{{value|floatformat:-8}}</strong></span>
+                                                {% elif key == 'low' %}
+                                                {{key.capitalize}}:
+                                                <span class="color-orange"> <strong>{{value|floatformat:-8}}</strong></span>
+                                              {% endif %}
+                                        {% endfor %}
+                                    </p>
+                                 </div>
+                             </div>
+                            <p>Change:
+                                {{filters.epic.data.usdt.last.percentage_change_7d|check_arrow|safe}}
+                               <span class="mr-2 color-{{filters.epic.data.usdt.last.percentage_change_7d|check_color}}" style="font-size: 1.5rem; font-weight: bold;">
+                                   {{filters.epic.data.usdt.last.percentage_change_7d}}%
+                                </span>
                             </p>
                         </div>
                     </div>
                 </section>
-                <div class="graphs mt-2 mb-3">
+                <div class="graphs mt-0 mb-0">
                     {{ filters.charts.epic_7d_price.div | safe }}
                     {{ filters.charts.epic_7d_price.script | safe }}
                 </div>
-                <p class="text-center">
+                <p class="text-center mb-0">
                     Average price 7 days from exchanges powered by
                     <a href="https://www.coingecko.com/en/coins/epic-cash" target="_blank">CoinGecko.com </a></small></h4>
                 </p>
@@ -595,7 +638,7 @@
 <!--        RIGHT SIDE PANELS-->
 
 <div class="col-lg-3">
-    <section class="widget widget-height-xs">
+    <section class="widget widget-height-xs ">
         <section class="feed-item">
             <div class="icon pull-left">
                 <i class="fa fa-bar-chart-o"></i>
@@ -642,7 +685,8 @@
                     </div>
                     <div class="feed-item-body">
                         <div class="text">
-                            <p>In Circulation:
+                            <p><strong>In Circulation:</strong></p>
+                            <p>
                                 <img class="img px-1" src="{% static 'imgs/btn1.png' %}" alt="" height="17">
                                 <span class="num-md-white">{{filters.epic.explorer.circulating|intcomma}}</span> out of
                                 <span class="num-md-white">21 million</span>
@@ -677,23 +721,33 @@
                     </div>
                     <div class="feed-item-body">
                         <div class="text py-1">
-                            In last <span class="num-md-white">24 hours</span>
-                            <img class="img px-1" src="{% static 'imgs/btn1.png' %}" alt="" height="17">
-                            <span class="num-md-white">{{daily_mined|intcomma}}</span>
-                             coins were mined.
-                        </div>
-                        <div>
+                            <p>
+                                <strong>Mined in last 24 hours:</strong>
+                            </p>
+                            <p>
+                                <img class="img px-1" src="{% static 'imgs/btn1.png' %}" alt="" height="17">
+                                <span class="num-md-white">{{daily_mined.coins|intcomma}}</span>
+                                 coins
+                            </p>
+                            <p>
+                                <img class="img px-1" src="{% static 'imgs/btn1.png' %}" alt="" height="17">
+                                <span class="num-md-white">{{daily_mined.blocks|intcomma}}</span>
+                                blocks
+                            </p>
+                            <p>
                             Worth:
                             <i class="fa fa-dollar dollar-color"></i>
-                            <span class="num-md-white">{{daily_mined|epic_to:'usdt'|floatformat:0|intcomma}}</span>
+                            <span class="num-md-white">{{daily_mined.coins|epic_to:'usdt'|floatformat:0|intcomma}}</span>
                               ||
                             <i class="fa fa-bitcoin color-orange"></i>
-                            <span class="num-md-white">{{daily_mined|epic_to:'btc'|floatformat:-2}}</span>
-                            <br>
+                            <span class="num-md-white">{{daily_mined.coins|epic_to:'btc'|floatformat:-2}}</span>
+                            </p>
+                            <p>
                             <span class="num-md-white">
-                                {{daily_mined|get_percent:filters.epic.explorer.circulating}}
+                                {{daily_mined.coins|get_percent:filters.epic.explorer.circulating}}
                             </span>
                             % of circulating.
+                            </p>
                         </div>
                     </div>
                 </section>
@@ -704,7 +758,7 @@
                     <div class="feed-item-body">
                         <div class="text py-1">
                             <p>Block height:
-                                <span class="num-md-white">{{filters.epic.explorer.height|intcomma}}</span> blocks.
+                                <span class="num-md-white">{{filters.epic.explorer.height|intcomma}}</span>
                             </p>
                             <p>
                                 Block Subsidy Value: <i class="fa fa-dollar dollar-color"></i>
