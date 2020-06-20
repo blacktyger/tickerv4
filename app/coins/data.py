@@ -349,7 +349,7 @@ def vitex_data(save=False):
     return f"ViteX Data saved in db {timedelta(seconds=end_time - start_time)}"
 
 
-def pool_data():
+def pool_data(save=False):
     parts = {
         'icemining': {
             'url': 'https://icemining.ca/api/',
@@ -360,7 +360,7 @@ def pool_data():
             }
         }
 
-    for pool in POOLS:
+    for pool in POOLS[:1]:
         pool_to_update, created = Pool.objects.get_or_create(
             name=pool, coin=models()['epic'])
         pool_to_update.updated = timezone.now()

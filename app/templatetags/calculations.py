@@ -83,14 +83,18 @@ def daily_mined(coin):
 
 def halving(coin):
     block_time = d(coin.explorer.last().average_blocktime)
-    daily = d(86400 / block_time)
     block_height = d(coin.explorer.last().height)
-    halving_height = 480_960
-    hours_left = ((halving_height - block_height) / daily) * 24
-    print(hours_left)
-    now = timezone.now()
-    date = now + timedelta(hours=int(hours_left))
-    return date
+
+    def check_height():
+        if block_height < 480_960:
+            halving_height = 480_960
+        else:
+            halving_height = 1_157_760
+        return halving_height
+
+    time_left = ((check_height() - block_height) * block_time)
+    date = timezone.now() + timedelta(seconds=int(time_left))
+    return {'date': date, 'height': check_height()}
 
 
 def high_low_7d(coin, target=""):

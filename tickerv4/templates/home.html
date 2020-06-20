@@ -53,7 +53,7 @@
 
     }
     .widget-height-xs {
-        min-height: 100px;
+        min-height: 120px;
 
     }
     .widget-height-md {
@@ -148,8 +148,8 @@
                         </p>
                         <p>
                             {% for c in currency %}
-                            <span class="ml-1">
-                                <img class="ml-3 mr-1" src="{{c.flag}}" height="18px">{{c.symbol}}:
+                            <span>
+                                <img class="ml-1 mr-1" src="{{c.flag}}" height="18px">{{c.symbol}}:
                                 <span class="num-md-white">{{c.price|times:filters.epic.data.usdt.last.avg_price|floatformat:-3}}</span>
                             </span>
                             {% endfor %}
@@ -173,16 +173,16 @@
                             <p>
                                 <strong>
                                 <span class="text-warning">Next halving:</span>
-                                {{halving|date:"jS M, H:i T"}}
+                                {{halving.date|date:"d M Y, H:i T"}}
                                 </strong>
                             </p>
                             <p>
-                                At block height: <strong>480,960</strong>
+                                At block height: <strong>{{halving.height|intcomma}}</strong>
                             </p>
                             <p>
                                 <strong>
                                     <i class="fa fa-history text-warning mr-2"></i>
-                                    {{ halving|timeuntil}}
+                                    {{ halving.date|timeuntil}}
                                 </strong>
                                 <span class="text-warning">
                                     (<strong>{{filters.epic.explorer.height|minus_back:480960|floatformat:0|intcomma}}

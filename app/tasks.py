@@ -1,29 +1,30 @@
-from datetime import timedelta
-from time import monotonic
-
+from background_task.models import Task
 from .models import *
-from .templatetags.calculations import daily_mined, \
-    high_low_7d
 from .coins.data import *
 from background_task import background
 from .coins.charts import main_charts, mw_charts
-from .globals import pairs
+
+
+def clear_db_task(name):
+    db_record = Task.objects.filter(verbose_name=name)
+    if db_record.exists():
+        db_record.delete()
+        return print(f"{name} deleted")
 
 
 def update(tasks, save=False):
     start_time = monotonic()
-    print(f"[{timezone.now().strftime('%H:%M:%S')}] START >> {[str(task).split(' ')[1] for task in tasks]}")
+    print(f"[{timezone.now().strftime('%H:%M:%S')}] {[str(task).split(' ')[1] for task in tasks]} -- START")
     for task in list(tasks):
         task(save=save)
         # print(f"{str(task).split(' ')[1]}")
-
     end_time = monotonic()
-    return print(f"[{timezone.now().strftime('%H:%M:%S')}] END >> TIME: {timedelta(seconds=end_time - start_time).total_seconds()} SECONDS")
+    return print(f"[{timezone.now().strftime('%H:%M:%S')}] {[str(task).split(' ')[1] for task in tasks]} -- END IN TIME: {timedelta(seconds=end_time - start_time).total_seconds()} SECONDS")
 
 
-@background(schedule=120)
+@background(schedule=300)
 def up_data1():
-    tasks = [coingecko_data, explorer_data, currency_data]
+    tasks = [coingecko_data, explorer_data, currency_data, pool_data]
     update(tasks)
     return f'OK'
 
@@ -35,7 +36,7 @@ def up_exchanges():
     return f'OK'
 
 
-@background(schedule=60)
+@background(schedule=300)
 def up_data2():
     tasks = [epic_data, mw_charts, main_charts]
     update(tasks)

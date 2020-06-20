@@ -8,20 +8,18 @@ from time import sleep
 
 from django.contrib import admin
 from django.urls import path, include  # add this
-from app.tasks import up_data1, up_data2, up_exchanges
+from app.tasks import clear_db_task, up_data1, up_data2, up_exchanges
 
 urlpatterns = [
-    # path('api/', include('epic_api.urls')),
     path('admin/', admin.site.urls),
-    # path("", include("authentication.urls")),  # add this
-    path("", include("app.urls"))  # add this
+    # path("", include("authentication.urls")),
+    path("", include("app.urls"))
     ]
 
-if not Task.objects.filter(verbose_name="up_data1").exists():
-    up_data1(repeat=120, verbose_name="up_data1")
+TASKS = {'up_data1': up_data1, 'up_exchanges': up_exchanges, 'up_data2': up_data2}
 
-if not Task.objects.filter(verbose_name="up_data2").exists():
-    up_data2(repeat=60, verbose_name="up_data2")
+for name, task in TASKS.items():
+    clear_db_task(name)
+    task(repeat=300, verbose_name=name)
 
-if not Task.objects.filter(verbose_name="up_exchanges").exists():
-    up_exchanges(repeat=300, verbose_name="up_exchanges")
+
