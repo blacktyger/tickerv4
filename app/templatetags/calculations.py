@@ -69,9 +69,9 @@ def epic_to(value, target):
     Convert amount (value) of Epic-Cash to given target - USD or Bitcoin.
     """
     if target == 'btc':
-        return round(d(filters()['epic']['data'][target].last().avg_price) * d(value), 8)
+        return round(d(filters()['epic']['data'][target].order_by('updated').last().avg_price) * d(value), 8)
     else:
-        return round(d(filters()['epic']['data'][target].last().avg_price) * d(value), 3)
+        return round(d(filters()['epic']['data'][target].order_by('updated').last().avg_price) * d(value), 3)
 
 
 def daily_mined(coin):
@@ -82,8 +82,8 @@ def daily_mined(coin):
 
 
 def halving(coin):
-    block_time = d(coin.explorer.last().average_blocktime)
-    block_height = d(coin.explorer.last().height)
+    block_time = d(coin.explorer.order_by('updated').last().average_blocktime)
+    block_height = d(coin.explorer.order_by('updated').last().height)
 
     def check_height():
         if block_height < 480_960:

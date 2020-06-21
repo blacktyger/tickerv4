@@ -97,10 +97,6 @@
                             Last Update: {{filters.epic.data.last.0.updated|timesince }} ago ||
                                 {{filters.epic.data.last.0.updated|date:"jS M, H:i T"}}
                         </div>
-    <!--                    <div class="widget-controls">-->
-    <!--                        <a title="Options" href="#"><i class="glyphicon glyphicon-cog"></i></a>-->
-    <!--                        <a data-widgster="close" title="Close" href="#"><i class="glyphicon glyphicon-remove"></i></a>-->
-    <!--                    </div>-->
                     </div>
                     <div class="row py-2">
                         <div class="col-lg-12 hidden-xs">
@@ -162,38 +158,6 @@
 </div>
 <div class="col-lg-9">
     <div class="row-flex row">
-        <div class="col-lg-4">
-            <section class="widget bg-dark widget-height-xs">
-                <section class="feed-item">
-                    <div class="pull-left">
-                        <i class="fa fa-clock-o color-orange mt-1" style="font-size: 2.5rem;"></i>
-                    </div>
-                    <div class="feed-item-body">
-                        <div class="text py-2" style="font-size: 1.5rem;">
-                            <p>
-                                <strong>
-                                <span class="text-warning">Next halving:</span>
-                                {{halving.date|date:"d M Y, H:i T"}}
-                                </strong>
-                            </p>
-                            <p>
-                                At block height: <strong>{{halving.height|intcomma}}</strong>
-                            </p>
-                            <p>
-                                <strong>
-                                    <i class="fa fa-history text-warning mr-2"></i>
-                                    {{ halving.date|timeuntil}}
-                                </strong>
-                                <span class="text-warning">
-                                    (<strong>{{filters.epic.explorer.height|minus_back:480960|floatformat:0|intcomma}}
-                                    blocks</strong>)</span> left.
-
-                            </p>
-                        </div>
-                    </div>
-                </section>
-            </section>
-        </div>
         <div class="col-lg-4">
             <section class="widget widget-height-xs">
                 <section class="feed-item">
@@ -275,6 +239,46 @@
                                  of circulating supply
                             </div>
                         </div>
+                    </div>
+                </section>
+            </section>
+        </div>
+                <div class="col-lg-4">
+            <section class="widget widget-height-xs ">
+                <section class="feed-item">
+                    <div class="icon pull-left">
+                        <i class="fa fa-bar-chart-o"></i>
+                    </div>
+                    <div class="feed-item-body">
+                        <h5 class="card-title mt-1 pb-1 text-white text-truncate">
+                                <strong>Market Capitalization</strong>
+                            </h5>
+                            <hr>
+                            <div class="row align-items-center mb-3">
+                                <div class="col-auto">
+                                    <span class="my-2 mr-2 py-1" style="font-size: 2.2rem;">
+                                        <strong>
+                                            <i class="fa fa-dollar dollar-color"></i>
+                                            {{filters.epic.explorer.circulating|epic_to:'usdt'|floatformat:0|intcomma}}
+                                        </strong>
+                                    </span>
+                                </div>
+                                <div class="col-6">
+                                    <span class="my-2 mr-2 py-1" style="font-size: 2.2rem;">
+                                        <strong>
+                                            <i class="fa fa-bitcoin color-orange ml-3"></i>
+                                            {{filters.epic.explorer.circulating|epic_to:'btc'|floatformat:-3|intcomma}}
+                                        </strong>
+                                    </span>
+                                </div>
+                            </div> <!-- end row-->
+                            <div class="pull-left mt-2" style="text-decoration: line-through;">
+                               <span class="mr-2  color-green" style="font-size: 1.5rem; font-weight: bold;">
+                                        <i class="fa fa-arrow-up color-green"></i>
+                                        {{volumes.total.all|get_percent:filters.epic.explorer.circulating}}%
+                                </span>
+                                change in last 24 hours.
+                            </div>
                     </div>
                 </section>
             </section>
@@ -638,42 +642,87 @@
 <!--        RIGHT SIDE PANELS-->
 
 <div class="col-lg-3">
-    <section class="widget widget-height-xs ">
+    <section class="widget widget-height-xs">
         <section class="feed-item">
             <div class="icon pull-left">
-                <i class="fa fa-bar-chart-o"></i>
+                <i class="fa fa-cubes"></i>
             </div>
             <div class="feed-item-body">
-                <h5 class="card-title mt-1 pb-1 text-white text-truncate">
-                        <strong>Market Capitalization</strong>
-                    </h5>
-                    <hr>
-                    <div class="row align-items-center mb-3">
-                        <div class="col-auto">
-                            <span class="my-2 mr-2 py-1" style="font-size: 2.2rem;">
-                                <strong>
-                                    <i class="fa fa-dollar dollar-color"></i>
-                                    {{filters.epic.explorer.circulating|epic_to:'usdt'|floatformat:0|intcomma}}
-                                </strong>
-                            </span>
-                        </div>
-                        <div class="col-6">
-                            <span class="my-2 mr-2 py-1" style="font-size: 2.2rem;">
-                                <strong>
-                                    <i class="fa fa-bitcoin color-orange ml-3"></i>
-                                    {{filters.epic.explorer.circulating|epic_to:'btc'|floatformat:-3|intcomma}}
-                                </strong>
-                            </span>
-                        </div>
-                    </div> <!-- end row-->
-                    <div class="pull-left mt-2" style="text-decoration: line-through;">
-                       <span class="mr-2  color-green" style="font-size: 1.5rem; font-weight: bold;">
-                                <i class="fa fa-arrow-up color-green"></i>
-                                {{volumes.total.all|get_percent:filters.epic.explorer.circulating}}%
-                        </span>
-                        change in last 24 hours.
-                    </div>
+                <div class="text">
+                    <p>
+                        <strong>Blockchain</strong>
+                    </p>
+                    <p>
+                        Block height:
+                        <span class="num-md-white">{{filters.epic.explorer.height|intcomma}}</span>
+                    </p>
+                    <p>
+                        Block reward:
+                        <img class="img px-1 mb-1" src="{% static 'imgs/btn1.png' %}" alt="" height="17">
+                        <span class="num-md-white">{{filters.epic.explorer.reward|intcomma}}</span>
+                    </p>
+                    <p>
+                        Block Subsidy Value: <i class="fa fa-dollar dollar-color"></i>
+                        <span class="num-md-white">{{filters.epic.data.usdt.last.block_value|floatformat:-2}}</span>
+                    </p>
+                </div>
             </div>
+        </section>
+         <section class="feed-item">
+            <div class="icon pull-left">
+                <i class="fa fa-gears"></i>
+            </div>
+            <div class="feed-item-body">
+                <div class="text py-1">
+                    <p>
+                        <strong>Mined in last 24 hours:</strong>
+                    </p>
+                    <p>
+                        <img class="img px-1" src="{% static 'imgs/btn1.png' %}" alt="" height="17">
+                        <span class="num-md-white">{{daily_mined.coins|intcomma}}</span>
+                         coins
+                    </p>
+                    <p>
+                        <img class="img px-1" src="{% static 'imgs/btn1.png' %}" alt="" height="17">
+                        <span class="num-md-white">{{daily_mined.blocks|intcomma}}</span>
+                        blocks
+                    </p>
+                    <p>
+                    Worth:
+                    <i class="fa fa-dollar dollar-color"></i>
+                    <span class="num-md-white">{{daily_mined.coins|epic_to:'usdt'|floatformat:0|intcomma}}</span>
+                      ||
+                    <i class="fa fa-bitcoin color-orange"></i>
+                    <span class="num-md-white">{{daily_mined.coins|epic_to:'btc'|floatformat:-2}}</span>
+                    </p>
+                    <p>
+                    <span class="num-md-white">
+                        {{daily_mined.coins|get_percent:filters.epic.explorer.circulating}}
+                    </span>
+                    % of circulating.
+                    </p>
+                </div>
+            </div>
+        </section>
+        <section class="feed-item">
+            <div class="icon pull-left">
+                <i class="fa fa-bullseye"></i>
+            </div>
+            <div class="feed-item-body">
+                <div class="text py-1">
+                    <p>Current Target Difficulty:
+                    </p>
+                    <p>
+                        ProgPow: <span class="num-md-white"> {{filters.epic.explorer.target_diff.progpow|intword}}</span>
+                    </p>
+                    <p>
+                        RandomX: <span class="num-md-white"> {{filters.epic.explorer.target_diff.randomx|intword}}</span>
+                    </p>
+                    <p>
+                        Cuckoo: <span class="num-md-white"> - </span>
+                    </p>
+                    </div>
+                </div>
         </section>
     </section>
     <section class="widget">
@@ -717,75 +766,45 @@
                 </section>
                 <section class="feed-item">
                     <div class="icon pull-left">
-                        <i class="fa fa-gears"></i>
+                        <i class="fa fa-rocket"></i>
                     </div>
                     <div class="feed-item-body">
-                        <div class="text py-1">
+                        <div class="text">
                             <p>
-                                <strong>Mined in last 24 hours:</strong>
+                                <strong>All time high price:</strong>
                             </p>
+                            {% for k in filters.epic.data.last %}
+                                <p>
+                                    {% if k.pair == 'btc' %}
+                                    <i class="fa fa-bitcoin color-orange"></i>
+                                    {% elif k.pair == 'usdt' %}
+                                    <i class="fa fa-dollar dollar-color"></i>
+                                    {% endif %}
+                                    <span class="num-md-white"> {{k.ath}} </span>
+                                     ||
+                                    <span class="num-md-white"> {{k.ath_change}} </span> %
+                                    {{k.ath_change|check_arrow|safe}}
+                                </p>
+                            {% endfor %}
                             <p>
-                                <img class="img px-1" src="{% static 'imgs/btn1.png' %}" alt="" height="17">
-                                <span class="num-md-white">{{daily_mined.coins|intcomma}}</span>
-                                 coins
+                                <i class="fa fa-history text-light"></i>
+                                <span class="text-light">
+                                    {% with filters.epic.data.last.0 as k %}
+                                    {{k.ath_date|naturaltime}}
+                                     ({{k.ath_date|date:"d/m/y"}}')
+                                    {% endwith %}
+                                </span>
                             </p>
-                            <p>
-                                <img class="img px-1" src="{% static 'imgs/btn1.png' %}" alt="" height="17">
-                                <span class="num-md-white">{{daily_mined.blocks|intcomma}}</span>
-                                blocks
-                            </p>
-                            <p>
-                            Worth:
-                            <i class="fa fa-dollar dollar-color"></i>
-                            <span class="num-md-white">{{daily_mined.coins|epic_to:'usdt'|floatformat:0|intcomma}}</span>
-                              ||
-                            <i class="fa fa-bitcoin color-orange"></i>
-                            <span class="num-md-white">{{daily_mined.coins|epic_to:'btc'|floatformat:-2}}</span>
-                            </p>
-                            <p>
-                            <span class="num-md-white">
-                                {{daily_mined.coins|get_percent:filters.epic.explorer.circulating}}
-                            </span>
-                            % of circulating.
-                            </p>
-                        </div>
-                    </div>
-                </section>
-                <section class="feed-item">
-                    <div class="icon pull-left">
-                        <i class="fa fa-cube"></i>
-                    </div>
-                    <div class="feed-item-body">
-                        <div class="text py-1">
-                            <p>Block height:
-                                <span class="num-md-white">{{filters.epic.explorer.height|intcomma}}</span>
-                            </p>
-                            <p>
-                                Block Subsidy Value: <i class="fa fa-dollar dollar-color"></i>
-                                <span class="num-md-white">{{filters.epic.data.usdt.last.block_value|floatformat:-2}}</span>
-                            </p>
-                        </div>
-                    </div>
-                </section>
-                <section class="feed-item">
-                    <div class="icon pull-left">
-                        <i class="fa fa-bullseye"></i>
-                    </div>
-                    <div class="feed-item-body">
-                        <div class="text py-1">
-                            <p>Current Target Difficulty:
-                            </p>
-                            <p>
-                                ProgPow: <span class="num-md-white"> {{filters.epic.explorer.target_diff.progpow|intword}}</span>
-                            </p>
-                            <p>
-                                RandomX: <span class="num-md-white"> {{filters.epic.explorer.target_diff.randomx|intword}}</span>
-                            </p>
-                            <p>
-                                Cuckoo: <span class="num-md-white"> - </span>
-                            </p>
+
+                            <div class="row">
+                                <div class="col-5">
+                                </div>
+                                <div class="col-7">
+                                </div>
                             </div>
+
                         </div>
+                    </div>
                 </section>
             </div>
         </div>
@@ -793,46 +812,31 @@
 </div>
 
 <div class="col-lg-3">
-    <section class="widget widget-height-md">
+    <section class="widget widget-height-xs">
         <section class="feed-item">
-            <div class="icon pull-left">
-                <i class="fa fa-rocket"></i>
+            <div class="pull-left">
+                <i class="fa fa-clock-o color-orange mt-1" style="font-size: 2.5rem;"></i>
             </div>
             <div class="feed-item-body">
-                <div class="text">
+                <div class="text" style="font-size: 1.5rem;">
                     <p>
-                        All time high price:
+                        <strong>
+                        <span class="text-warning">Next halving:</span>
+                        {{halving.date|date:"d M Y"}}
+                        </strong>
                     </p>
-                    {% for k in filters.epic.data.last %}
-                        <p>
-                            {% if k.pair == 'btc' %}
-                            <i class="fa fa-bitcoin color-orange"></i>
-                            {% elif k.pair == 'usdt' %}
-                            <i class="fa fa-dollar dollar-color"></i>
-                            {% endif %}
-                            <span class="num-md-white"> {{k.ath}} </span>
-                             ||
-                            <span class="num-md-white"> {{k.ath_change}} </span> %
-                            {{k.ath_change|check_arrow|safe}}
-                        </p>
-                    {% endfor %}
                     <p>
-                        <i class="fa fa-history text-light"></i>
-                        <span class="text-light">
-                            {% with filters.epic.data.last.0 as k %}
-                            {{k.ath_date|naturaltime}}
-                             ({{k.ath_date|date:"d/m/y"}}')
-                            {% endwith %}
-                        </span>
+                        At block height: <strong>{{halving.height|intcomma}}</strong>
                     </p>
-
-                    <div class="row">
-                        <div class="col-5">
-                        </div>
-                        <div class="col-7">
-                        </div>
-                    </div>
-
+                    <p>
+                        <strong>
+                            <i class="fa fa-history text-warning mr-2"></i>
+                            {{ halving.date|timeuntil}}
+                        </strong>
+                        <span class="text-warning" style="font-size: 1.2rem;"><br>
+                            (<strong>{{filters.epic.explorer.height|minus_back:halving.height|floatformat:0|intcomma}}
+                            blocks</strong>)</span> left.
+                    </p>
                 </div>
             </div>
         </section>

@@ -56,6 +56,16 @@ def updater(model, data):
                 model.save()
 
 
+def check_saving(record, interval=60*30):
+    if record:
+        save = (timezone.now() - record.updated).total_seconds() > interval
+        # print(f"found last saved and checking time...")
+    else:
+        save = True
+        print(f"no saved found, save this one")
+    return save
+
+
 def spread(ask, bid):
     return round(((d(ask) - d(bid)) / d(ask)) * 100, 2)
 
@@ -65,12 +75,12 @@ def avg(numbers):
 
 
 def get_gecko(coin):
-    return CoinGecko.objects.filter(coin=coin).last()
+    return CoinGecko.objects.filter(coin=coin).latest('updated')
 
 
 def get_ticker(coin, exchange, last=False):
     if last:
-        return Ticker.objects.filter(coin=coin, exchange=exchange).last()
+        return Ticker.objects.filter(coin=coin, exchange=exchange).latest('updated')
     else:
         return Ticker.objects.filter(coin=coin, exchange=exchange)
 
@@ -85,7 +95,7 @@ def usd_to_btc(value):
     """
     Convert amount (value) of USD to BTC.
     """
-    return d(value) / d(Coin.objects.get(symbol="BTC").coingecko.last().data['price'])
+    return d(value) / d(Coin.objects.get(symbol="BTC").coingecko.latest('updated').data['price'])
 
 
 @register.filter()
@@ -93,4 +103,4 @@ def btc_to_usd(value):
     """
     Convert amount (value) of BTC to USD.
     """
-    return d(value) * d(Coin.objects.get(symbol="BTC").coingecko.last().data['price'])
+    return d(value) * d(Coin.objects.get(symbol="BTC").coingecko.latest('updated').data['price'])

@@ -8,7 +8,7 @@ from pycoingecko import CoinGeckoAPI
 import copy
 from app.globals import pairs
 from app.tools import t_s, d, spread, avg, get_gecko, get_ticker, \
-    fields, updater, api, get_flag, btc_to_usd, usd_to_btc
+    fields, updater, api, get_flag, btc_to_usd, usd_to_btc, check_saving
 from app.models import Coin, Exchange, Data, Ticker, CoinGecko, \
     Chart, Explorer, Pool, Link, Currency
 
@@ -105,7 +105,7 @@ def models():
         'vitex': Exchange.objects.get(name='ViteX'),
         'epic': Coin.objects.get(symbol='EPIC'),
         'btc': Coin.objects.get(symbol='BTC'),
-        'icemining': Pool.objects.get(name='icemining')
+        'icemining': Pool.objects.filter(name='icemining').order_by('updated').last()
         }
 
 
@@ -113,18 +113,18 @@ def filters():
     return {
         'epic': {
             'coin': models()['epic'],
-            'gecko': models()['epic'].coingecko.last(),
-            'explorer': models()['epic'].explorer.last(),
+            'gecko': models()['epic'].coingecko.latest('updated'),
+            'explorer': models()['epic'].explorer.latest('updated'),
             'data': {
                 'all': models()['epic'].data.all(),
                 'usdt': Data.objects.filter(coin=models()['epic'], pair='usdt'),
                 'btc': Data.objects.filter(coin=models()['epic'], pair='btc'),
-                'last': [Data.objects.filter(coin=models()['epic'], pair='usdt').last(),
-                         Data.objects.filter(coin=models()['epic'], pair='btc').last()]
+                'last': [Data.objects.filter(coin=models()['epic'], pair='usdt').order_by('updated').last(),
+                         Data.objects.filter(coin=models()['epic'], pair='btc').order_by('updated').last()]
                 }},
         'bitcoin': {
             'coin': models()['btc'],
-            'gecko': models()['btc'].coingecko.last().data
+            'gecko': models()['btc'].coingecko.latest('updated').data
             },
         'exchanges': {
             'citex': {
@@ -133,8 +133,8 @@ def filters():
                     'all': models()['citex'].ticker.all(),
                     'usdt': models()['citex'].ticker.filter(pair='usdt'),
                     'btc': models()['citex'].ticker.filter(pair='btc'),
-                    'last': [models()['citex'].ticker.filter(pair='usdt').last(),
-                             models()['citex'].ticker.filter(pair='btc').last()],
+                    'last': [models()['citex'].ticker.filter(pair='usdt').order_by('updated').last(),
+                             models()['citex'].ticker.filter(pair='btc').order_by('updated').last()],
                     }},
             'vitex': {
                 'details': models()['vitex'],
@@ -142,19 +142,19 @@ def filters():
                     'all': models()['vitex'].ticker.all(),
                     'usdt': models()['vitex'].ticker.filter(pair='usdt'),
                     'btc': models()['vitex'].ticker.filter(pair='btc'),
-                    'last': [models()['vitex'].ticker.filter(pair='usdt').last(),
-                             models()['vitex'].ticker.filter(pair='btc').last()],
+                    'last': [models()['vitex'].ticker.filter(pair='usdt').order_by('updated').last(),
+                             models()['vitex'].ticker.filter(pair='btc').order_by('updated').last()],
                     }}
             },
         'charts': {
             # 'btc': [models()['btc'].chart.get().div, models()['btc'].chart.get().script],
-            'epic_7d_price': Chart.objects.get(name='epic_7d_price'),
-            'epic_vol_24h': Chart.objects.get(name='vol_24h'),
+            'epic_7d_price': Chart.objects.filter(name='epic_7d_price').order_by('updated').last(),
+            'epic_vol_24h': Chart.objects.filter(name='vol_24h').order_by('updated').last(),
             },
         }
 
 
-def exchange_details(exchange, save=False):
+def exchange_details(exchange):
     start_time = monotonic()
     data = {key: value for key, value in
             cg.get_exchanges_by_id(exchange.name).items() if key != 'tickers'}
@@ -163,7 +163,7 @@ def exchange_details(exchange, save=False):
     return f"Exchange Details saved in db {timedelta(seconds=end_time - start_time)}"
 
 
-def currency_data(save=False):
+def currency_data():
     start_time = monotonic()
 
     def get_rates():
@@ -171,66 +171,85 @@ def currency_data(save=False):
         rates = api(url, API_KEY + '/latest/USD')
         return {x: y for x, y in rates['conversion_rates'].items()}
 
-    data = {}
     source = get_rates()
     for currency, price in source.items():
         for key, value in CURRS.items():
             if currency == value:
-                new, created = Currency.objects.get_or_create(symbol=value)
-                new.flag = get_flag(key)
-                new.price = price
-                new.country = key
-                new.save()
+                data = {
+                    'updated': timezone.now(),
+                    'flag': get_flag(key),
+                    'price': price,
+                    'country': key
+                    }
+                last_saved = Currency.objects.filter(symbol=value, to_save=True).last()
+                last_updated = Currency.objects.filter(symbol=value, to_save=False).last()
+                save = check_saving(last_saved)
+
+                if save:
+                    Currency.objects.create(to_save=save, **data)
+                    print(f"save=True, record saved")
+                else:
+                    if last_updated:
+                        updater(last_updated, data)
+                    else:
+                        Data.objects.create(to_save=save, **data)
+
     end_time = monotonic()
-    return f"Currency data saved in db {timedelta(seconds=end_time - start_time)}"
+    return f"Currency data saved in db {timedelta(seconds=(end_time - start_time)).total_seconds()} seconds"
 
 
-def coingecko_data(save=False):
+def coingecko_data():
     start_time = monotonic()
     for coin in all_coins():
-        # print(f"{coin}...")
+        print(f"{coin}...")
         source = copy.deepcopy(cg.get_coin_by_id(coin.name))
         data = {
-            'name': source['name'].capitalize(),
-            'symbol': source['symbol'].upper(),
-            'img': source['image']['large'],
-            'market_cap': d(source['market_data']['market_cap']['usd'], 2),
-            'volume': d(source['market_data']['total_volume']['usd'], 2),
-            'price': d(cg.get_price(coin.name, 'usd')[coin.name]['usd'], 4),
-            'price_7d': cg.get_coin_market_chart_by_id(coin.name, 'usd', 7)['prices'],
-            'price_7d_btc': cg.get_coin_market_chart_by_id(coin.name, 'btc', 7)['prices'],
-            'change_24h': d(source['market_data']['price_change_percentage_24h'], 2),
-            'change_7d': d(source['market_data']['price_change_percentage_7d'], 2),
-            'ath': {
-                'usdt': {
-                    'price': source['market_data']['ath']['usd'],
-                    'date': source['market_data']['ath_date']['usd'],
-                    'change': source['market_data']['ath_change_percentage']['usd']
-                    },
-                'btc': {
-                    'price': source['market_data']['ath']['btc'],
-                    'date': source['market_data']['ath_date']['btc'],
-                    'change': source['market_data']['ath_change_percentage']['btc']
-                    }}
-            }
+            'updated': timezone.now(),
+            'coin': coin,
+            'data': {
+                'name': source['name'].capitalize(),
+                'symbol': source['symbol'].upper(),
+                'img': source['image']['large'],
+                'market_cap': d(source['market_data']['market_cap']['usd'], 2),
+                'volume': d(source['market_data']['total_volume']['usd'], 2),
+                'price': d(cg.get_price(coin.name, 'usd')[coin.name]['usd'], 4),
+                'price_7d': cg.get_coin_market_chart_by_id(coin.name, 'usd', 7)['prices'],
+                'price_7d_btc': cg.get_coin_market_chart_by_id(coin.name, 'btc', 7)['prices'],
+                'change_24h': d(source['market_data']['price_change_percentage_24h'], 2),
+                'change_7d': d(source['market_data']['price_change_percentage_7d'], 2),
+                'ath': {
+                    'usdt': {
+                        'price': source['market_data']['ath']['usd'],
+                        'date': source['market_data']['ath_date']['usd'],
+                        'change': source['market_data']['ath_change_percentage']['usd']
+                        },
+                    'btc': {
+                        'price': source['market_data']['ath']['btc'],
+                        'date': source['market_data']['ath_date']['btc'],
+                        'change': source['market_data']['ath_change_percentage']['btc']
+                        }}
+                }}
+
+        last_saved = CoinGecko.objects.filter(coin=coin, to_save=True).last()
+        last_updated = CoinGecko.objects.filter(coin=coin, to_save=False).last()
+        save = check_saving(last_saved)
 
         if save:
-            CoinGecko.objects.create(coin=coin, data=data)
+            CoinGecko.objects.create(to_save=save, **data)
+            print(f"save=True, record saved")
         else:
-            if CoinGecko.objects.filter(coin=coin).last():
-                x = CoinGecko.objects.filter(coin=coin).last()
-                x.updated = timezone.now()
-                x.data = data
-                x.save()
+            if last_updated:
+                updater(last_updated, data)
             else:
-                CoinGecko.objects.create(coin=coin, data=data)
+                CoinGecko.objects.create(to_save=save, **data)
 
     end_time = monotonic()
-    return f"CoinGecko data saved in db {timedelta(seconds=end_time - start_time)}"
+    return f"CoinGecko data saved in db {timedelta(seconds=(end_time - start_time)).total_seconds()} seconds"
 
 
-def citex_data(save=False):
+def citex_data():
     start_time = monotonic()
+    exchange = models()['citex']
 
     def citex_api(que, sym='epic_usdt', si='', ty='', breaks=False):
         """ Create proper urls for API end points """
@@ -255,10 +274,9 @@ def citex_data(save=False):
             for tick in source:
                 if tick['symbol'] == coin.symbol.lower() + '_' + target:
                     data[target].update(tick)
-                    sleep(1.3)
+                    sleep(1.4)
 
             update = {
-                'id': int(len(Ticker.objects.all())) + 1,
                 'updated': timezone.now(),
                 'coin': coin,
                 'exchange': models()['citex'],
@@ -281,18 +299,26 @@ def citex_data(save=False):
                 'trades': citex_api('trades', sym='epic_' + target, si="10", breaks=True),
                 }
             sleep(1.5)
+
+            last_saved = Ticker.objects.filter(coin=coin, pair=target, exchange=exchange,
+                                               to_save=True).last()
+            last_updated = Ticker.objects.filter(coin=coin, pair=target, exchange=exchange,
+                                                 to_save=False).last()
+            save = check_saving(last_saved)
             if save:
-                Ticker.objects.create(**update)
+                Ticker.objects.create(to_save=save, **update)
+                print(f"save=True, record saved")
             else:
-                x = Ticker.objects.filter(
-                    coin=coin, pair=target, exchange=models()['citex']).last()
-                updater(x, update)
+                if last_updated:
+                    updater(last_updated, update)
+                else:
+                    Ticker.objects.create(to_save=save, **update)
 
     end_time = monotonic()
-    return f"Citex Data saved in db {timedelta(seconds=end_time - start_time)}"
+    return f"Citex Data saved in db {timedelta(seconds=(end_time - start_time)).total_seconds()} seconds"
 
 
-def vitex_data(save=False):
+def vitex_data():
     start_time = monotonic()
     queries = {
         'depth': 'depth?symbol=',
@@ -302,9 +328,11 @@ def vitex_data(save=False):
         'trades': 'trades?symbol=',
         'candles': 'klines?symbol=',
         }
+
     symbol = 'EPIC-001_BTC-000'
-    coin = models()['epic']
     target = 'btc'
+    exchange = models()['vitex']
+    coin = models()['epic']
 
     def vitex_api(query, breaks=False, extra='&interval=hour&limit=20'):
         start_url = "https://api.vitex.net/api/v2/"
@@ -319,7 +347,6 @@ def vitex_data(save=False):
 
     data = {query: vitex_api(queries[query]) for query in queries}
     update = {
-        'id': int(len(Ticker.objects.all())) + 1,
         'updated': timezone.now(),
         'coin': coin,
         'exchange': models()['vitex'],
@@ -338,18 +365,24 @@ def vitex_data(save=False):
         'trades': data['trades']['data']
         }
 
+    last_saved = Ticker.objects.filter(coin=coin, pair=target, exchange=exchange, to_save=True).last()
+    last_updated = Ticker.objects.filter(coin=coin, pair=target, exchange=exchange, to_save=False).last()
+    save = check_saving(last_saved)
     if save:
-        Ticker.objects.create(**update)
+        Ticker.objects.create(to_save=save, **update)
+        print(f"save=True, record saved")
     else:
-        x = Ticker.objects.filter(
-            coin=models()['epic'], pair=target, exchange=models()['vitex']).last()
-        updater(x, update)
+        if last_updated:
+            updater(last_updated, update)
+        else:
+            Ticker.objects.create(to_save=save, **update)
 
     end_time = monotonic()
-    return f"ViteX Data saved in db {timedelta(seconds=end_time - start_time)}"
+    return f"ViteX Data saved in db {timedelta(seconds=(end_time - start_time)).total_seconds()} seconds"
 
 
-def pool_data(save=False):
+def pool_data():
+    start_time = monotonic()
     parts = {
         'icemining': {
             'url': 'https://icemining.ca/api/',
@@ -360,17 +393,32 @@ def pool_data(save=False):
             }
         }
 
-    for pool in POOLS[:1]:
-        pool_to_update, created = Pool.objects.get_or_create(
-            name=pool, coin=models()['epic'])
-        pool_to_update.updated = timezone.now()
-        pool_to_update.blocks = api(parts[pool]['url'], parts[pool]['params'][0])[0:50]
-        pool_to_update.save()
+    for pool in POOLS:
+        data = {
+            'name': pool,
+            'coin': models()['epic'],
+            'updated': timezone.now(),
+            'blocks': api(parts[pool]['url'], parts[pool]['params'][0])[0:50]
+            }
 
-    return f"Pool data saved to db!"
+        last_saved = Pool.objects.filter(name=pool, coin=models()['epic'], to_save=True).last()
+        last_updated = Pool.objects.filter(name=pool, coin=models()['epic'], to_save=False).last()
+        save = check_saving(last_saved)
+        if save:
+            Pool.objects.create(to_save=save, **data)
+            print(f"save=True, record saved")
+        else:
+            if last_updated:
+                updater(last_updated, data)
+            else:
+                Pool.objects.create(to_save=save, **data)
+
+    end_time = monotonic()
+    return f"Pool data saved to db! {timedelta(seconds=(end_time - start_time)).total_seconds()} seconds"
 
 
-def explorer_data(save=False):
+def explorer_data():
+    start_time = monotonic()
     parts = {
         'ex_url': 'https://explorer.epic.tech/api?q=',
         'ex_params': [
@@ -403,17 +451,23 @@ def explorer_data(save=False):
             }
         }
 
+    last_saved = Explorer.objects.filter(coin=models()['epic'], to_save=True).last()
+    last_updated = Explorer.objects.filter(coin=models()['epic'], to_save=False).last()
+    save = check_saving(last_saved)
     if save:
-        Explorer.objects.create(**data)
+        Explorer.objects.create(to_save=save, **data)
+        print(f"save=True, record saved")
     else:
-        x = Explorer.objects.filter(coin=models()['epic']).last()
-        updater(x, data)
+        if last_updated:
+            updater(last_updated, data)
+        else:
+            Explorer.objects.create(to_save=save, **data)
 
     end_time = monotonic()
-    return f"Explorer data saved to db!"
+    return f"Explorer data saved to db! {timedelta(seconds=(end_time - start_time)).total_seconds()} seconds"
 
 
-def epic_data(save=False):
+def epic_data():
     start_time = monotonic()
 
     coin = models()['epic']
@@ -425,8 +479,7 @@ def epic_data(save=False):
                        coin=coin, exchange=ex, pair=target)}
                for target in PAIRS}
 
-    def avg_price(coin, currency):
-        coin = models()['epic']
+    def avg_price(currency):
         source = {target:
                       [float(Ticker.objects.filter(
                           coin=coin, exchange=ex,
@@ -450,7 +503,7 @@ def epic_data(save=False):
             'coin': models()['epic'],
             'pair': target,
             'updated': timezone.now(),
-            'avg_price': d(avg_price(models()['epic'], target)),
+            'avg_price': d(avg_price(target)),
             'vol_24h': sum([d(x.volume) for x in tickers[target].values()]),
             'percentage_change_24h': get_gecko(models()['epic']).data['change_24h'],
             'percentage_change_7d': get_gecko(models()['epic']).data['change_7d'],
@@ -460,23 +513,30 @@ def epic_data(save=False):
             'ath_date': get_gecko(models()['epic']).data['ath'][target]['date'],
             'ath_change': d(get_gecko(models()['epic']).data['ath'][target]['change'], 2),
             'block_value': d(filters()['epic']['explorer'].reward) *
-                           d(avg_price(models()['epic'], target)),
+                           d(avg_price(target)),
             }
+
+        last_saved = Data.objects.filter(coin=models()['epic'], pair=target, to_save=True).last()
+        last_updated = Data.objects.filter(coin=models()['epic'], pair=target, to_save=False).last()
+        save = check_saving(last_saved)
         if save:
-            Data.objects.create(**data)
+            Data.objects.create(to_save=save, **data)
+            print(f"save=True, record saved")
         else:
-            x = Data.objects.filter(coin=models()['epic'], pair=target).last()
-            updater(x, data)
+            if last_updated:
+                updater(last_updated, data)
+            else:
+                Data.objects.create(to_save=save, **data)
 
     end_time = monotonic()
-    return f"Epic-Cash Data saved in db {timedelta(seconds=end_time - start_time)}"
+    return f"Epic-Cash Data saved in db {timedelta(seconds=(end_time - start_time)).total_seconds()} seconds"
 
 
 def volumes():
     vols = {
-        'citex_btc': d(filters()['exchanges']['citex']['tickers']['btc'].last().volume),
-        'vitex_btc': d(filters()['exchanges']['vitex']['tickers']['btc'].last().volume),
-        'citex_usdt': d(filters()['exchanges']['citex']['tickers']['usdt'].last().volume)
+        'citex_btc': d(filters()['exchanges']['citex']['tickers']['btc'].order_by('updated').last().volume),
+        'vitex_btc': d(filters()['exchanges']['vitex']['tickers']['btc'].order_by('updated').last().volume),
+        'citex_usdt': d(filters()['exchanges']['citex']['tickers']['usdt'].order_by('updated').last().volume)
         }
 
     total = vols['citex_btc'] + vols['citex_usdt'] + vols['vitex_btc']
@@ -490,24 +550,13 @@ def volumes():
     citex_vs_total = d(citex / total * 100, 0)
     vitex_vs_total = d(vitex / total * 100, 0)
 
-    return {
-        'total': {
-            'all': total,
-            'usdt': usdt,
-            'btc': btc,
-            },
-        'citex': {
-            'total': citex,
-            'usdt': vols['citex_usdt'],
-            'btc': vols['citex_btc'],
-            },
-        'vitex': {
-            'total': vitex,
-            'btc': vols['vitex_btc'],
-            },
-        'percent': {
-            'btc': [btc, btc_vs_total],
-            'usdt': [usdt, usdt_vs_total],
-            'CITEX': [citex, citex_vs_total],
-            'ViteX': [vitex, vitex_vs_total]
-            }}
+    data = {
+        'total': {'all': total,
+                  'usdt': usdt, 'btc': btc},
+        'citex': {'total': citex,
+                  'usdt': vols['citex_usdt'], 'btc': vols['citex_btc']},
+        'vitex': {'total': vitex, 'btc': vols['vitex_btc']},
+        'percent': {'btc': [btc, btc_vs_total], 'usdt': [usdt, usdt_vs_total],
+                    'CITEX': [citex, citex_vs_total], 'ViteX': [vitex, vitex_vs_total]
+                    }}
+    return data

@@ -15,10 +15,12 @@ class Link(models.Model):
 
 
 class Currency(models.Model):
+    updated = models.DateTimeField(default=timezone.now)
     symbol = models.CharField(max_length=124, default='name')
     flag = models.CharField(max_length=124, default='flag')
     country = models.CharField(max_length=124, default='country')
     price = models.CharField(max_length=124, default='price')
+    to_save = models.BooleanField(default=False)
 
 
 class Exchange(models.Model):
@@ -33,6 +35,7 @@ class Exchange(models.Model):
     description = models.CharField(max_length=124, default='-')
     telegram_url = models.CharField(max_length=124, default='-')
     trade_volume_24h_btc_normalized = models.CharField(max_length=124, default='-')
+    to_save = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -44,6 +47,7 @@ class Coin(models.Model):
     links = JSONField(default={})
     img = models.CharField(max_length=124, default='')
     mw_coin = models.BooleanField(default=True, null=True)
+    to_save = models.BooleanField(default=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -69,6 +73,7 @@ class Data(models.Model):
     explorer = JSONField(default={})
     last_block = models.DateTimeField(default=timezone.now)
     block_value = models.CharField(max_length=124, default='0')
+    to_save = models.BooleanField(default=False)
 
 
 class Pool(models.Model):
@@ -77,6 +82,7 @@ class Pool(models.Model):
     name = models.CharField(max_length=124, default="Epic Pool")
     updated = models.DateTimeField(default=timezone.now)
     blocks = JSONField(default={})
+    to_save = models.BooleanField(default=False)
 
 
 class Explorer(models.Model):
@@ -91,6 +97,7 @@ class Explorer(models.Model):
     totalcoins = models.CharField(max_length=124, default='0')
     target_diff = JSONField(default={})
     total_diff = JSONField(default={})
+    to_save = models.BooleanField(default=False)
 
 
 class Ticker(models.Model):
@@ -112,6 +119,7 @@ class Ticker(models.Model):
     orders = JSONField(default={})
     trades = JSONField(default={})
     candles = JSONField(default={})
+    to_save = models.BooleanField(default=False)
 
 
 class CoinGecko(models.Model):
@@ -119,6 +127,7 @@ class CoinGecko(models.Model):
     updated = models.DateTimeField(default=timezone.now)
 
     data = JSONField(default={})
+    to_save = models.BooleanField(default=False)
 
 
 class Chart(models.Model):
@@ -127,3 +136,4 @@ class Chart(models.Model):
     updated = models.DateTimeField(default=timezone.now)
     div = models.TextField(default='-')
     script = models.TextField(default='-')
+    to_save = models.BooleanField(default=False)
