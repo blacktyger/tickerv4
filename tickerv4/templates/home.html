@@ -8,22 +8,13 @@
 </script>
 <head>
     <style>
-
-     div.screen-large {
-        visibility: visible;
+    .bg-ldark {
+        background-color: rgb(56, 56, 56, 0.7);
     }
-
-    div.screen-mobile {
-        display: none;
-    }
-
-    @media screen and (max-width: 700px) {
-        div.screen-large {
-            display: none;
-        }
-        div.screen-mobile {
-            display: block;
-        }
+    .tables-color {
+        color: #333333;
+        font-weight: bold;
+        font-size: 1.5rem;
     }
     .dollar-color {
         color: rgb(159, 223, 159);
@@ -76,8 +67,8 @@
 
     </style>
 </head>
- <div class="row d-flex align-items-center">
-     <div class="col-lg-4 mb-4 pl-5">
+<div class="row d-flex align-items-center">
+    <div class="col-lg-4 mb-4 pl-5">
         <img class="img"  src="{% static 'imgs/logo2.png' %}" height="100px">
     </div>
     <div class="col-lg-8 px-5">
@@ -85,22 +76,25 @@
             <div class="text">
                 <div class="container-flex">
                     <div class="row">
-                        <div class="col-lg-7 my-2 text-center">
+                        <div class="col-lg-6 text-center">
                         {% for coin in other_coins %}
-                            <img class="img pl-3 pr-1" src="{{coin.coingecko.last.data.img}}" height="25">
-                            <i class="fa fa-dollar"></i>
-                            {{coin.coingecko.last.data.price|floatformat:-1|intcomma}}
-                            {{coin.coingecko.last.data.change_24h|check_arrow|safe}}
-                            {% endfor %}
+                            <span class="label bg-ldark pt-2 px-2 mb-1 mx-1" style="border-radius: 25px;">
+                                <img class="img mb-2 py-1" src="{{coin.coingecko.last.data.img}}" height="28">
+                                <span class="num-md-white">
+                                    <i class="fa fa-dollar dollar-color"></i>
+                                    {{coin.coingecko.last.data.price|floatformat:-1|intcomma}}
+                                    {{coin.coingecko.last.data.change_24h|check_arrow|safe}}
+                                </span>
+                            </span>
+                        {% endfor %}
                         </div>
-                        <div class="col-lg-5 my-2 text-right">
-                            Last Update: {{filters.epic.data.last.0.updated|timesince }} ago ||
-                                {{filters.epic.data.last.0.updated|date:"jS M, H:i T"}}
-                        </div>
-                    </div>
-                    <div class="row py-2">
-                        <div class="col-lg-12 hidden-xs">
-
+                        <div class="col-lg-5 my-2 text-center">
+                            <span class="num-xs-white">
+                                Last update: {{filters.epic.data.last.0.updated|timesince }} ago
+                                <span class="label mx-2 px-2 py-1" style="border-radius: 25px; background-color: rgb(56, 56, 56, 0.4);">
+                                    {{filters.epic.data.last.0.updated|date:"jS M, H:i T"}}
+                                </span>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -109,7 +103,7 @@
     </div>
 </div>
 <div class="row px-4">
-    <div class="col-lg-12 screen-large">
+    <div class="col-lg-12 hidden-xs hidden-sm hidden-md">
         <section class="widget widget-height-min">
             <section class="feed-item">
                 <div class="icon pull-left">
@@ -131,7 +125,7 @@
             </section>
         </section>
     </div>
-    <div class="col-lg-12 screen-mobile">
+    <div class="col-lg-12 hidden-lg hidden-xl">
         <section class="widget widget-height-min">
             <section class="feed-item">
                 <div class="icon pull-left">
@@ -156,6 +150,8 @@
         </section>
     </div>
 </div>
+
+
 <div class="col-lg-9">
     <div class="row-flex row">
         <div class="col-lg-4">
@@ -492,16 +488,13 @@
             </section>
         </div>
     </div>
-    <!-- 3RD ROW-->
+    <!--END 3RD ROW-->
 
     <!-- EXCHANGES TABS -->
     <div class="row">
         <div class="col-lg-12">
             <section class="widget">
                 <header>
-                    <div class="widget-controls">
-                        <a data-widgster="close" title="Close" href="#"><i class="glyphicon glyphicon-remove"></i></a>
-                    </div>
                 </header>
                     <!-- EXCHANGES TAB -->
                 <table class="table">
@@ -509,10 +502,11 @@
                 <tr>
                     <th>Name</th>
                     <th>Last price</th>
-                    <th class="hidden-xs">24h High / Low</th>
-                    <th class="hidden-xs">Spread</th>
+                    <th class="hidden-xs hidden-sm">24h High / Low</th>
+                    <th class="hidden-xs hidden-sm">Bid / Ask</th>
+                    <th class="hidden-xs hidden-sm">Spread</th>
                     <th>24h Volume</th>
-                    <th class="hidden-xs">Last Trade</th>
+                    <th class="hidden-xs hidden-sm">Last Trade</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -539,7 +533,7 @@
                                 </p>
                             {% endfor %}
                         </td>
-                        <td class="hidden-xs">
+                        <td class="hidden-xs hidden-sm">
                             {% for k ,v in v.items %}
                                 <p>
                                     {% if k == 'usdt' %}
@@ -547,16 +541,30 @@
                                     {% elif k == 'btc' %}
                                         <i class="fa fa-bitcoin color-orange"></i>
                                     {% endif %}
-                                        <span class="num-md-white">{{v.high|floatformat:-8}}
+                                        <span class="tables-color">{{v.high|floatformat:-8}}
                                              / {{v.low|floatformat:-8}}
                                         </span>
                                 </p>
                             {% endfor %}
                         </td>
-                        <td>
+                        <td class="hidden-xs hidden-sm">
+                            {% for k ,v in v.items %}
+                                <p>
+                                    {% if k == 'usdt' %}
+                                        <i class="fa fa-dollar text-success"></i>
+                                    {% elif k == 'btc' %}
+                                        <i class="fa fa-bitcoin color-orange"></i>
+                                    {% endif %}
+                                        <span class="tables-color">{{v.bid|floatformat:-8}}
+                                             / {{v.ask|floatformat:-8}}
+                                        </span>
+                                </p>
+                            {% endfor %}
+                        </td>
+                        <td class="hidden-xs hidden-sm">
                             {% for k ,v in v.items %}
                             <p>
-                                <span class="num-md-white">{{ v.spread }}%</span>
+                                <span class="tables-color">{{ v.spread }}%</span>
                             </p>
                             {% endfor %}
                         </td>
@@ -564,14 +572,14 @@
                             {% for k ,v in v.items %}
                                 <p>
                                     <img class="img" src="{% static 'imgs/btn1.png' %}" alt="" height="15">
-                                    <span class="num-md-white">{{v.volume|floatformat:-2|intcomma}}</span>
+                                    <span class="tables-color">{{v.volume|floatformat:-2|intcomma}}</span>
                                 </p>
                             {% endfor %}
                         </td>
-                        <td class="hidden-xs">
+                        <td class="hidden-xs hidden-sm">
                             {% for k ,v in v.items %}
                                 <p>
-                                    <span class="num-md-white">{{v.last_trade|timesince }} ago</span>
+                                    <span class="tables-color">{{v.last_trade|timesince }} ago</span>
                                 </p>
                             {% endfor %}
                         </td>
@@ -606,9 +614,9 @@
                             <th>Coin</th>
                             <th>Price</th>
                             <th>Price Change 7d</th>
-                            <th class="chart-col-header hidden-xs">Trend</th>
-                            <th class="hidden-xs">Market Cap</th>
-                            <th>Volume 24h</th>
+                            <th class="hidden-xs">Trend</th>
+                            <th>Market Cap</th>
+                            <th class="hidden-xs">Volume 24h</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -618,17 +626,40 @@
                             {% else %}
                             <tr style="">
                             {% endif %}
-                                <td>
+                                <td class="ml-0 px-1">
                                     <img src="{{ v.img }}" class="rounded px-2" height="30px">
-                                    <span class="label label-important">{{v.symbol.upper}}</span> {{v.name}}</td>
-                                <td><span class="num-md-white">${{v.price|floatformat:-3}}</span></td>
-                                <td><span class="num-md-white">{{v.change_7d|floatformat:-1}} %</span></td>
+                                    <span class="label label-important" style="font-size: 1.0rem">
+                                        {{v.symbol.upper}}
+                                    </span>
+                                    <span class="hidden-xs hidden-sm hidden-md">
+                                        <strong>{{v.name}}</strong>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="tables-color">
+                                        <i class="fa fa-dollar dollar-color"></i>
+                                        {{v.price|floatformat:-3}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="tables-color">{{v.change_7d|floatformat:-1}}%</span>
+                                </td>
                                 <td class="chart-cell hidden-xs">
                                     {{ v.chart.script|safe }}
                                     {{ v.chart.div|safe }}
                                 </td>
-                                <td class="hidden-xs"><strong>${{v.market_cap|floatformat:0|intcomma}}</strong></td>
-                                <td><strong>${{v.volume|floatformat:0|intcomma}}</strong></td>
+                                <td class="tables-color">
+                                    {% if v.market_cap < '1' %}
+                                            N / A
+                                    {% else %}
+                                        <i class="fa fa-dollar dollar-color"></i>
+                                        {{v.market_cap|floatformat:0|intcomma}}
+                                    {% endif %}
+                                </td>
+                                <td class="hidden-xs tables-color">
+                                    <i class="fa fa-dollar dollar-color"></i>
+                                    <strong>{{v.volume|floatformat:0|intcomma}}</strong>
+                                </td>
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -710,7 +741,8 @@
             </div>
             <div class="feed-item-body">
                 <div class="text py-1">
-                    <p>Current Target Difficulty:
+                    <p>
+                        <strong>Current Target Difficulty:</strong>
                     </p>
                     <p>
                         ProgPow: <span class="num-md-white"> {{filters.epic.explorer.target_diff.progpow|intword}}</span>
@@ -815,14 +847,16 @@
     <section class="widget widget-height-xs">
         <section class="feed-item">
             <div class="pull-left">
-                <i class="fa fa-clock-o color-orange mt-1" style="font-size: 2.5rem;"></i>
+                <i class="fa fa-clock-o mt-1" style="font-size: 2rem;"></i>
             </div>
             <div class="feed-item-body">
                 <div class="text" style="font-size: 1.5rem;">
                     <p>
                         <strong>
-                        <span class="text-warning">Next halving:</span>
-                        {{halving.date|date:"d M Y"}}
+                        Next halving:
+                            <span class="label mx-2 px-2 py-1" style="font-size: 1.4rem; border-radius: 25px;background-color: rgb(56, 56, 56, 0.4);">
+                                {{halving.date|date:"d M Y"}}
+                            </span>
                         </strong>
                     </p>
                     <p>
@@ -842,8 +876,6 @@
         </section>
     </section>
 </div>
-
-
 
 
 {% endblock content %}

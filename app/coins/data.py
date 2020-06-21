@@ -13,7 +13,7 @@ from app.models import Coin, Exchange, Data, Ticker, CoinGecko, \
     Chart, Explorer, Pool, Link, Currency
 
 
-API_KEY = '46da25a4b62cbb6e531bfc39'
+API_KEY = '3bac7843ca477be4c11ab84a'
 
 PAIRS = pairs
 cg = CoinGeckoAPI()
@@ -165,35 +165,30 @@ def exchange_details(exchange):
 
 def currency_data():
     start_time = monotonic()
+    last_update = Currency.objects.last()
+    if not last_update or (timezone.now() - last_update.updated).total_seconds() > 60*60*6:
+        def get_rates():
+            url = 'https://v6.exchangerate-api.com/v6/'
+            rates = api(url, API_KEY + '/latest/USD')
+            return {x: y for x, y in rates['conversion_rates'].items()}
 
-    def get_rates():
-        url = 'https://v6.exchangerate-api.com/v6/'
-        rates = api(url, API_KEY + '/latest/USD')
-        return {x: y for x, y in rates['conversion_rates'].items()}
-
-    source = get_rates()
-    for currency, price in source.items():
-        for key, value in CURRS.items():
-            if currency == value:
-                data = {
-                    'updated': timezone.now(),
-                    'flag': get_flag(key),
-                    'price': price,
-                    'country': key
-                    }
-                last_saved = Currency.objects.filter(symbol=value, to_save=True).last()
-                last_updated = Currency.objects.filter(symbol=value, to_save=False).last()
-                save = check_saving(last_saved)
-
-                if save:
-                    Currency.objects.create(to_save=save, **data)
-                    print(f"save=True, record saved")
-                else:
-                    if last_updated:
-                        updater(last_updated, data)
+        source = get_rates()
+        for currency, price in source.items():
+            for key, value in CURRS.items():
+                if currency == value:
+                    data = {
+                        'symbol': value,
+                        'updated': timezone.now(),
+                        'flag': get_flag(key),
+                        'price': price,
+                        'country': key
+                        }
+                    if last_update:
+                        updater(last_update, data)
                     else:
-                        Data.objects.create(to_save=save, **data)
-
+                        Currency.objects.create(**data)
+    else:
+        pass
     end_time = monotonic()
     return f"Currency data saved in db {timedelta(seconds=(end_time - start_time)).total_seconds()} seconds"
 
