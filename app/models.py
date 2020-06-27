@@ -5,6 +5,7 @@ from django.utils import timezone
 from .globals import pairs
 from .tools import *
 
+register = template.Library()
 
 PAIRS = tuple((target, target) for target in pairs)
 
@@ -155,3 +156,19 @@ class Chart(models.Model):
     div = models.TextField(default='-')
     script = models.TextField(default='-')
     to_save = models.BooleanField(default=False)
+
+
+@register.filter()
+def usd_to_btc(value):
+    """
+    Convert amount (value) of USD to BTC.
+    """
+    return d(value) / d(Coin.objects.get(symbol="BTC").coingecko.latest('updated').data['price'])
+
+
+@register.filter()
+def btc_to_usd(value):
+    """
+    Convert amount (value) of BTC to USD.
+    """
+    return d(value) * d(Coin.objects.get(symbol="BTC").coingecko.latest('updated').data['price'])
