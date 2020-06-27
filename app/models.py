@@ -3,6 +3,8 @@ from django.utils import timezone
 from django_extensions.db.fields.json import JSONField
 from django.utils import timezone
 from .globals import pairs
+from .tools import *
+
 
 PAIRS = tuple((target, target) for target in pairs)
 
@@ -75,6 +77,12 @@ class Data(models.Model):
     block_value = models.CharField(max_length=124, default='0')
     to_save = models.BooleanField(default=False)
 
+    def market_cap_change_24h(self):
+        return change(Data.objects.filter(coin=self.coin, pair=self.pair), 'market_cap')
+
+    def market_avg_price_24h(self):
+        return change(Data.objects.filter(coin=self.coin, pair=self.pair), 'avg_price')
+
 
 class Pool(models.Model):
     coin = models.ForeignKey(Coin, on_delete=models.CASCADE, related_name='pool')
@@ -101,7 +109,6 @@ class Explorer(models.Model):
 
 
 class Ticker(models.Model):
-
     exchange = models.ForeignKey(Exchange, on_delete=models.CASCADE, related_name='ticker')
     coin = models.ForeignKey(Coin, on_delete=models.CASCADE)
 
@@ -122,12 +129,23 @@ class Ticker(models.Model):
     to_save = models.BooleanField(default=False)
 
 
+def get_ticker(coin, exchange, last=False):
+    if last:
+        return Ticker.objects.filter(coin=coin, exchange=exchange).latest('updated')
+    else:
+        return Ticker.objects.filter(coin=coin, exchange=exchange)
+
+
 class CoinGecko(models.Model):
     coin = models.ForeignKey(Coin, on_delete=models.CASCADE, related_name='coingecko')
     updated = models.DateTimeField(default=timezone.now)
 
     data = JSONField(default={})
     to_save = models.BooleanField(default=False)
+
+
+def get_gecko(coin):
+    return CoinGecko.objects.filter(coin=coin).latest('updated')
 
 
 class Chart(models.Model):

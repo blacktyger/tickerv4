@@ -8,8 +8,8 @@ from django.utils import timezone
 
 from app.coins.data import all_coins, models, filters, volumes, all_exchanges
 from app.globals import pairs
-from app.tools import t_s, d, spread, avg, get_gecko, get_ticker, fields, updater
-from app.models import Coin, Exchange, Data, Ticker, CoinGecko, Chart
+from app.tools import t_s, d, spread, avg, fields, updater
+from app.models import Coin, Exchange, Data, Ticker, CoinGecko, Chart, get_gecko
 
 
 colors = {

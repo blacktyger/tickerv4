@@ -1,15 +1,30 @@
 from datetime import timedelta
-
+from django.utils import timezone
+from statistics import mean
 from django import template
 
-from app.tools import d, t_s, avg, get_gecko
+from app.models import get_gecko, Coin
+from app.tools import d, t_s, avg
 from app.coins.data import models, filters
-from statistics import mean
-
-from django.utils import timezone
 
 
 register = template.Library()
+
+
+@register.filter()
+def usd_to_btc(value):
+    """
+    Convert amount (value) of USD to BTC.
+    """
+    return d(value) / d(Coin.objects.get(symbol="BTC").coingecko.latest('updated').data['price'])
+
+
+@register.filter()
+def btc_to_usd(value):
+    """
+    Convert amount (value) of BTC to USD.
+    """
+    return d(value) * d(Coin.objects.get(symbol="BTC").coingecko.latest('updated').data['price'])
 
 
 @register.filter(name='check_arrow')
@@ -50,6 +65,11 @@ def times(value, num):
 
 @register.filter()
 def get_percent(value, num):
+    """
+    :param value:
+    :param num:
+    :return: rounded percentage value of num
+    """
     return d(d(value) / d(num) * 100, 2)
 
 
@@ -69,9 +89,9 @@ def epic_to(value, target):
     Convert amount (value) of Epic-Cash to given target - USD or Bitcoin.
     """
     if target == 'btc':
-        return round(d(filters()['epic']['data'][target].order_by('updated').last().avg_price) * d(value), 8)
+        return round(d(filters()['epic']['data'][target].avg_price) * d(value), 8)
     else:
-        return round(d(filters()['epic']['data'][target].order_by('updated').last().avg_price) * d(value), 3)
+        return round(d(filters()['epic']['data'][target].avg_price) * d(value), 3)
 
 
 def daily_mined(coin):
@@ -104,3 +124,6 @@ def high_low_7d(coin, target=""):
         'high': max(data),
         'average': mean(data)
         }
+
+
+

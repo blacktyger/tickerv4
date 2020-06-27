@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'background_task',
     'django.contrib.humanize',
     'app',
+    'calc'
     ]
 
 MIDDLEWARE = [

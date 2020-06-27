@@ -1,16 +1,18 @@
 import json
 from time import sleep, monotonic
 from datetime import timedelta
-
 import requests
 from django.utils import timezone
 from pycoingecko import CoinGeckoAPI
 import copy
+
 from app.globals import pairs
-from app.tools import t_s, d, spread, avg, get_gecko, get_ticker, \
-    fields, updater, api, get_flag, btc_to_usd, usd_to_btc, check_saving
+from app.tools import t_s, d, spread, avg, fields, updater,\
+     api, get_flag, check_saving,\
+    change
 from app.models import Coin, Exchange, Data, Ticker, CoinGecko, \
     Chart, Explorer, Pool, Link, Currency
+from app.models import get_gecko, get_ticker
 
 
 API_KEY = '3bac7843ca477be4c11ab84a'
@@ -117,8 +119,8 @@ def filters():
             'explorer': models()['epic'].explorer.latest('updated'),
             'data': {
                 'all': models()['epic'].data.all(),
-                'usdt': Data.objects.filter(coin=models()['epic'], pair='usdt'),
-                'btc': Data.objects.filter(coin=models()['epic'], pair='btc'),
+                'usdt': Data.objects.filter(coin=models()['epic'], pair='usdt').order_by('updated').last(),
+                'btc': Data.objects.filter(coin=models()['epic'], pair='btc').order_by('updated').last(),
                 'last': [Data.objects.filter(coin=models()['epic'], pair='usdt').order_by('updated').last(),
                          Data.objects.filter(coin=models()['epic'], pair='btc').order_by('updated').last()]
                 }},
@@ -165,16 +167,17 @@ def exchange_details(exchange):
 
 def currency_data():
     start_time = monotonic()
-    last_update = Currency.objects.last()
-    if not last_update or (timezone.now() - last_update.updated).total_seconds() > 60*60*6:
-        def get_rates():
-            url = 'https://v6.exchangerate-api.com/v6/'
-            rates = api(url, API_KEY + '/latest/USD')
-            return {x: y for x, y in rates['conversion_rates'].items()}
 
-        source = get_rates()
-        for currency, price in source.items():
-            for key, value in CURRS.items():
+    def get_rates():
+        url = 'https://v6.exchangerate-api.com/v6/'
+        rates = api(url, API_KEY + '/latest/USD')
+        return {x: y for x, y in rates['conversion_rates'].items()}
+
+    for key, value in CURRS.items():
+        last_update = Currency.objects.filter(symbol=value).last()
+        if not last_update or (timezone.now() - last_update.updated).total_seconds() > 60 * 60 * 6:
+            source = get_rates()
+            for currency, price in source.items():
                 if currency == value:
                     data = {
                         'symbol': value,
@@ -189,6 +192,7 @@ def currency_data():
                         Currency.objects.create(**data)
     else:
         pass
+
     end_time = monotonic()
     return f"Currency data saved in db {timedelta(seconds=(end_time - start_time)).total_seconds()} seconds"
 
@@ -495,12 +499,12 @@ def epic_data():
 
     for target in PAIRS:
         data = {
-            'coin': models()['epic'],
+            'coin': coin,
             'pair': target,
             'updated': timezone.now(),
             'avg_price': d(avg_price(target)),
             'vol_24h': sum([d(x.volume) for x in tickers[target].values()]),
-            'percentage_change_24h': get_gecko(models()['epic']).data['change_24h'],
+            # 'percentage_change_24h': change(Data.objects.filter(coin=coin, pair=target), 'avg_price'),
             'percentage_change_7d': get_gecko(models()['epic']).data['change_7d'],
             'market_cap': d(
                 filters()['epic']['explorer'].circulating) * avg([x.last_price for x in tickers[target].values()]),

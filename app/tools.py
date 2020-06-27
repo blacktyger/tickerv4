@@ -4,8 +4,9 @@ import json
 import requests
 from django import template
 from decimal import Decimal, InvalidOperation
+
+from django.utils import timezone
 from django.utils.timezone import make_aware
-from .models import *
 
 register = template.Library()
 
@@ -66,6 +67,11 @@ def check_saving(record, interval=60*30):
     return save
 
 
+def time_delta(end, start=timezone.now()):
+    delta = (start - end).total_seconds()
+    return delta
+
+
 def spread(ask, bid):
     return round(((d(ask) - d(bid)) / d(ask)) * 100, 2)
 
@@ -74,33 +80,40 @@ def avg(numbers):
     return statistics.mean([d(n) for n in list(numbers)])
 
 
-def get_gecko(coin):
-    return CoinGecko.objects.filter(coin=coin).latest('updated')
-
-
-def get_ticker(coin, exchange, last=False):
-    if last:
-        return Ticker.objects.filter(coin=coin, exchange=exchange).latest('updated')
-    else:
-        return Ticker.objects.filter(coin=coin, exchange=exchange)
-
-
 def get_flag(country):
     url = f'https://www.countryflags.io/{country}/shiny/64.png'
     return url
 
 
-@register.filter()
-def usd_to_btc(value):
+def nearest_date(model_qs, interval=60*60*24):
     """
-    Convert amount (value) of USD to BTC.
+    Find in model query set :updated fields date that is closest to -x :seconds
+    from now and return as datetime object.
     """
-    return d(value) / d(Coin.objects.get(symbol="BTC").coingecko.latest('updated').data['price'])
+    dates = [x.updated for x in model_qs.order_by('updated')]
+    the_date = timezone.now() - datetime.timedelta(seconds=interval)
+    nearest = min(dates, key=lambda x: abs(x - the_date))
+    # print(nearest.strftime('%D/%M/%Y | %H:%M:%S'))
+    return nearest
 
 
-@register.filter()
-def btc_to_usd(value):
+def check_change(v2, v1):
     """
-    Convert amount (value) of BTC to USD.
+    return: percentage change between two values
     """
-    return d(value) * d(Coin.objects.get(symbol="BTC").coingecko.latest('updated').data['price'])
+    return d(((v2-v1)/abs(v1))*100, 8)
+
+
+def change(model_qs, field, interval=60*60*24):
+    now = model_qs.order_by('updated').last()
+    print(getattr(now, field), now.updated)
+    before = [x for x in model_qs
+              if x.updated == nearest_date(model_qs, interval=interval)][0]
+    # if len(before) > 0:
+    print(getattr(before, field), before.updated)
+    print(check_change(d(getattr(now, field)), d(getattr(before, field))))
+    return check_change(d(getattr(now, field)), d(getattr(before, field)))
+    # else:
+    #     print(f"no previous update")
+    #     return 0
+
