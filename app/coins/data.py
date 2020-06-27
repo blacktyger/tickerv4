@@ -7,8 +7,8 @@ from pycoingecko import CoinGeckoAPI
 import copy
 
 from app.globals import pairs
-from app.tools import t_s, d, spread, avg, fields, updater,\
-     api, get_flag, check_saving,\
+from app.tools import t_s, d, spread, avg, fields, updater, \
+    api, get_flag, check_saving, \
     change
 from app.models import Coin, Exchange, Data, Ticker, CoinGecko, \
     Chart, Explorer, Pool, Link, Currency
@@ -149,7 +149,6 @@ def filters():
                     }}
             },
         'charts': {
-            # 'btc': [models()['btc'].chart.get().div, models()['btc'].chart.get().script],
             'epic_7d_price': Chart.objects.filter(name='epic_7d_price').order_by('updated').last(),
             'epic_vol_24h': Chart.objects.filter(name='vol_24h').order_by('updated').last(),
             },
@@ -190,8 +189,8 @@ def currency_data():
                         updater(last_update, data)
                     else:
                         Currency.objects.create(**data)
-    else:
-        pass
+        else:
+            continue
 
     end_time = monotonic()
     return f"Currency data saved in db {timedelta(seconds=(end_time - start_time)).total_seconds()} seconds"
@@ -348,7 +347,7 @@ def vitex_data():
     update = {
         'updated': timezone.now(),
         'coin': coin,
-        'exchange': models()['vitex'],
+        'exchange': exchange,
         'pair': target,
         'trading_url': 'https://x.vite.net/trade?symbol=' + symbol,
         'last_price': d(data['market']['data']['lastPrice']),
@@ -504,7 +503,7 @@ def epic_data():
             'updated': timezone.now(),
             'avg_price': d(avg_price(target)),
             'vol_24h': sum([d(x.volume) for x in tickers[target].values()]),
-            # 'percentage_change_24h': change(Data.objects.filter(coin=coin, pair=target), 'avg_price'),
+            'percentage_change_24h': change(Data.objects.filter(coin=coin, pair=target), 'avg_price'),
             'percentage_change_7d': get_gecko(models()['epic']).data['change_7d'],
             'market_cap': d(
                 filters()['epic']['explorer'].circulating) * avg([x.last_price for x in tickers[target].values()]),

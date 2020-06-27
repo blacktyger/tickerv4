@@ -36,6 +36,9 @@ def t_s(timestamp):
         time = datetime.datetime.fromtimestamp(int(timestamp))
     if len(str(timestamp)) == 16:
         time = datetime.datetime.fromtimestamp(int(timestamp / 1000000))
+    else:
+        time = datetime.datetime.now()
+        print(f"**WARN** {timestamp} is not a timestamp, {time} set instead")
     return make_aware(time)
 
 
@@ -106,12 +109,12 @@ def check_change(v2, v1):
 
 def change(model_qs, field, interval=60*60*24):
     now = model_qs.order_by('updated').last()
-    print(getattr(now, field), now.updated)
+    # print(getattr(now, field), now.updated)
     before = [x for x in model_qs
               if x.updated == nearest_date(model_qs, interval=interval)][0]
     # if len(before) > 0:
-    print(getattr(before, field), before.updated)
-    print(check_change(d(getattr(now, field)), d(getattr(before, field))))
+    # print(getattr(before, field), before.updated)
+    # print(check_change(d(getattr(now, field)), d(getattr(before, field))))
     return check_change(d(getattr(now, field)), d(getattr(before, field)))
     # else:
     #     print(f"no previous update")
