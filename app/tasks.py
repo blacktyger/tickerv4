@@ -16,12 +16,12 @@ def update(tasks):
     start_time = monotonic()
     print(f"[{timezone.now().strftime('%H:%M:%S')}] {[str(task).split(' ')[1] for task in tasks]} -- START")
     for task in list(tasks):
-        try:
-            task()
-            print(f"{str(task).split(' ')[1]}")
-        except:
-            print(f"GOOOOOOOOOOOOOOOOOOOOOWNOOOOOOOOOO")
-            continue
+        # try:
+        task()
+        print(f"{str(task).split(' ')[1]}")
+        # except:
+        # print(f"GOOOOOOOOOOOOOOOOOOOOOWNOOOOOOOOOO")
+        # continue
     end_time = monotonic()
     return print(f"[{timezone.now().strftime('%H:%M:%S')}] {[str(task).split(' ')[1] for task in tasks]} -- END IN TIME: {timedelta(seconds=end_time - start_time).total_seconds()} SECONDS")
 

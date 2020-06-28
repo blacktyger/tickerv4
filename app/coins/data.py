@@ -258,8 +258,8 @@ def citex_data():
         typ = '&type=' + ty
         url = start_url + query + symbol + size + typ
         if breaks:
-            sleep(1.3)
-        # print(f"{url}...")
+            sleep(1.4)
+        print(f"{url}...")
         return json.loads(requests.get(url).content)
 
     data = {target: {} for target in PAIRS}

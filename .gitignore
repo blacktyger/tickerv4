@@ -1,3 +1,4 @@
 db.sqlite3
 /app/migrations/
 /calc/migrations/
+/app/__pycache__/

@@ -32,13 +32,12 @@ def t_s(timestamp):
     """ Convert different timestamps to datetime object"""
     if len(str(timestamp)) == 13:
         time = datetime.datetime.fromtimestamp(int(timestamp) / 1000)
-    if len(str(timestamp)) == 10:
+    elif len(str(timestamp)) == 10:
         time = datetime.datetime.fromtimestamp(int(timestamp))
-    if len(str(timestamp)) == 16:
+    elif len(str(timestamp)) == 16:
         time = datetime.datetime.fromtimestamp(int(timestamp / 1000000))
     else:
-        time = datetime.datetime.now()
-        print(f"**WARN** {timestamp} is not a timestamp, {time} set instead")
+        print(f"** WARN ** Problems with timestamp: {timestamp}, len: {len(str(timestamp))}")
     return make_aware(time)
 
 
