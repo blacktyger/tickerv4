@@ -13,9 +13,9 @@ from app.tools import t_s, d, spread, avg, fields, updater, \
 from app.models import Coin, Exchange, Data, Ticker, CoinGecko, \
     Chart, Explorer, Pool, Link, Currency
 from app.models import get_gecko, get_ticker, btc_to_usd, usd_to_btc
+from tickerv4.keys import exchange_api_key
 
-
-API_KEY = '3bac7843ca477be4c11ab84a'
+API_KEY = exchange_api_key
 
 PAIRS = pairs
 cg = CoinGeckoAPI()

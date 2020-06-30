@@ -2,3 +2,5 @@ db.sqlite3
 /app/migrations/
 /calc/migrations/
 /app/__pycache__/
+/tickerv4/keys.py
+/tickerv4/__pycache__/keys.cpython-38.pyc
