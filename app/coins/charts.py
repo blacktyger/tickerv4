@@ -36,11 +36,9 @@ def main_charts(save=False):
     df = pd.DataFrame(data)
     source = ColumnDataSource(df)
 
-    TOOLS = "pan, wheel_zoom, box_zoom, reset, save"
-
     DTF = DatetimeTickFormatter()
     DTF.hours = ["%H:%M"]
-    DTF.days = ["%d/%m/'%y"]
+    DTF.days = ["%d/%m"]
     DTF.months = ["%d/%m/%Y"]
     DTF.years = ["%d/%m/%Y"]
 
@@ -65,7 +63,7 @@ def main_charts(save=False):
     # x stuff
     p.xaxis.visible = True
     p.xgrid.visible = False
-    p.xaxis.major_label_text_color = "grey"
+    p.xaxis.major_label_text_color = "#cccac4"
     p.xaxis[0].formatter = DTF
 
     # Y - PRICE
