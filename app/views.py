@@ -1,14 +1,24 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template import loader
 from django.http import HttpResponse
+from rest_framework import viewsets
 
+from .serializers import DataSerializer
 from .models import *
 from .templatetags.calculations import daily_mined, \
     high_low_7d
-from .coins.data import coins, all_coins, filters,\
+from .coins.data import coins, all_coins, filters, \
     all_exchanges, models, EXCHANGES, volumes, links
 from .globals import pairs
 from .templatetags.calculations import halving
+
+
+class DataViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint for Epic Cash data.
+    """
+    queryset = Data.objects.all().order_by('-updated')[0:2]
+    serializer_class = DataSerializer
 
 
 def index(request):
@@ -18,8 +28,8 @@ def index(request):
     for chart in Chart.objects.filter(name='mw_chart'):
         if chart.coin.mw_coin:
             mw_data[chart.coin.symbol].update({'chart':
-                                               {'div': chart.div,
-                                                'script': chart.script}})
+                                                   {'div': chart.div,
+                                                    'script': chart.script}})
 
     exchange_data = {ex: {
         target: ex.ticker.filter(pair=target).order_by('updated').last() for target in pairs

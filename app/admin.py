@@ -1,9 +1,3 @@
-# from .models import *
-# from django.contrib import admin
-#
-# admin.site.register((Exchange, Detail, Coin, CoinGecko, Ticker, Chart, Coin))
-
-
 from django.apps import apps
 from django.contrib import admin
 
