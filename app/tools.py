@@ -4,6 +4,7 @@ import json
 import requests
 from django import template
 from decimal import Decimal, InvalidOperation
+from .globals import *
 
 from django.utils import timezone
 from django.utils.timezone import make_aware
@@ -16,10 +17,10 @@ def d(value, places=8):
         return round(Decimal(value), places)
     except InvalidOperation:
         if value == '' or ' ':
-            print('Value "" or " "')
+            print(f'{warn_msg} Empty string')
             return Decimal(0)
         else:
-            print('Value is a string')
+            print(f'{warn_msg} String should have numbers only')
             pass
 
 
@@ -37,7 +38,7 @@ def t_s(timestamp):
     elif len(str(timestamp)) == 16:
         time = datetime.datetime.fromtimestamp(int(timestamp / 1000000))
     else:
-        print(f"** WARN ** Problems with timestamp: {timestamp}, len: {len(str(timestamp))}")
+        print(f"{warn_msg} Problems with timestamp: {timestamp}, len: {len(str(timestamp))}")
     return make_aware(time)
 
 
@@ -65,7 +66,7 @@ def check_saving(record, interval=60*30):
         # print(f"found last saved and checking time...")
     else:
         save = True
-        print(f"no saved found, save this one")
+        print(f"{info_msg} no saved found, save this one")
     return save
 
 
@@ -111,11 +112,10 @@ def change(model_qs, field, interval=60*60*24):
     # print(getattr(now, field), now.updated)
     before = [x for x in model_qs
               if x.updated == nearest_date(model_qs, interval=interval)][0]
-    # if len(before) > 0:
     # print(getattr(before, field), before.updated)
     # print(check_change(d(getattr(now, field)), d(getattr(before, field))))
     return check_change(d(getattr(now, field)), d(getattr(before, field)))
     # else:
-    #     print(f"no previous update")
+    #     print(f"{warn_msg} no previous update")
     #     return 0
 
