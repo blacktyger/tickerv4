@@ -11,7 +11,7 @@ from app.tools import t_s, d, spread, avg, fields, updater, \
     api, get_flag, check_saving, \
     change
 from app.models import Coin, Exchange, Data, Ticker, CoinGecko, \
-    Chart, Explorer, Pool, Link, Currency
+    Chart, Explorer, Pool, Link, Currency, History
 from app.models import get_gecko, get_ticker, btc_to_usd, usd_to_btc
 from tickerv4.keys import exchange_api_key
 
@@ -94,7 +94,7 @@ def pools():
 
 
 def all_exchanges():
-    return [exchange for exchange in Exchange.objects.all()]
+    return Exchange.objects.all()
 
 
 def models():
@@ -148,7 +148,6 @@ filterss = {
         'epic_vol_24h': Chart.objects.filter(name='vol_24h').order_by('updated').last(),
         },
     }
-
 
 
 def exchange_details(exchange):
@@ -387,7 +386,7 @@ def pool_data():
             }
         }
 
-    for pool in POOLS:
+    for pool in POOLS[:1]:
         data = {
             'name': pool,
             'coin': models()['epic'],
@@ -499,7 +498,8 @@ def epic_data():
             'updated': timezone.now(),
             'avg_price': d(avg_price(target)),
             'vol_24h': sum([d(x.volume) for x in tickers[target].values()]),
-            'percentage_change_24h': change(Data.objects.filter(coin=coin, pair=target), 'avg_price'),
+            # 'percentage_change_24h': change(Data.objects.filter(coin=coin, pair=target), 'avg_price'),
+            'percentage_change_24h': get_gecko(models()['epic']).data['change_24h'],
             'percentage_change_7d': get_gecko(models()['epic']).data['change_7d'],
             'market_cap': d(
                 filterss['epic']['explorer'].circulating) * avg([x.last_price for x in tickers[target].values()]),
@@ -510,17 +510,17 @@ def epic_data():
                            d(avg_price(target)),
             }
 
-        last_saved = Data.objects.filter(coin=models()['epic'], pair=target, to_save=True).last()
-        last_updated = Data.objects.filter(coin=models()['epic'], pair=target, to_save=False).last()
-        save = check_saving(last_saved)
-        if save:
-            Data.objects.create(to_save=save, **data)
-            print(f"save=True, record saved")
+        # last_saved = History.objects.filter(coin=models()['epic'], pair=target, to_save=True).last()
+        last_updated = Data.objects.filter(coin=models()['epic'], pair=target).last()
+        # save = check_saving(last_saved)
+        # if save:
+        #     Data.objects.create(to_save=save, **data)
+        #     print(f"save=True, record saved")
+        # else:
+        if last_updated:
+            updater(last_updated, data)
         else:
-            if last_updated:
-                updater(last_updated, data)
-            else:
-                Data.objects.create(to_save=save, **data)
+            Data.objects.create(**data)
 
     end_time = monotonic()
     return f"Epic-Cash Data saved in db {timedelta(seconds=(end_time - start_time)).total_seconds()} seconds"

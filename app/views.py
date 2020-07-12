@@ -20,14 +20,14 @@ class DataViewSet(viewsets.ModelViewSet):
     """
     API endpoint for Epic Cash data.
     """
-    queryset = Data.objects.all().order_by('-updated')[0:2]
+    queryset = Data.objects.order_by('-updated')[0:2]
     serializer_class = DataSerializer
 
 
 def index(request):
     start_time = monotonic()
     mw_data = {coin.symbol: CoinGecko.objects.filter(coin=coin).latest('updated').data
-               for coin in Coin.objects.all() if coin.mw_coin}
+               for coin in Coin.objects.filter(mw_coin=True)}
 
     for chart in Chart.objects.filter(name='mw_chart'):
         if chart.coin.mw_coin:
@@ -53,7 +53,7 @@ def index(request):
         'high_low_7d_btc': high_low_7d(models()['epic'], '_btc'),
         'filters': filterss,
         'links': Link.objects.all(),
-        'other_coins': [coin for coin in Coin.objects.all() if not coin.mw_coin]
+        'other_coins': Coin.objects.filter(mw_coin=False)
         }
     end_time = monotonic()
     print(f"{timedelta(seconds=(end_time - start_time)).total_seconds()} seconds")

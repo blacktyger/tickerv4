@@ -85,6 +85,28 @@ class Data(models.Model):
         return change(Data.objects.filter(coin=self.coin, pair=self.pair), 'avg_price')
 
 
+class History(models.Model):
+    coin = models.ForeignKey(Coin, on_delete=models.CASCADE, related_name='history')
+    pair = models.CharField(choices=PAIRS, default=PAIRS[0], max_length=100)
+
+    updated = models.DateTimeField(default=timezone.now)
+    avg_price = models.CharField(max_length=124, default='0')
+    vol_24h = models.CharField(max_length=124, default='0')
+    percentage_change_24h = models.CharField(max_length=124, default='0')
+    percentage_change_7d = models.CharField(max_length=124, default='0')
+    market_cap = models.CharField(max_length=124, default='0')
+    ath = models.CharField(max_length=124, default='0')
+    ath_date = models.DateTimeField(default=timezone.now)
+    ath_change = models.CharField(max_length=124, default='0')
+    explorer = JSONField(default={})
+    last_block = models.DateTimeField(default=timezone.now)
+    block_value = models.CharField(max_length=124, default='0')
+    to_save = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"History: {self.coin} from {self.updated}"
+
+
 class Pool(models.Model):
     coin = models.ForeignKey(Coin, on_delete=models.CASCADE, related_name='pool')
 

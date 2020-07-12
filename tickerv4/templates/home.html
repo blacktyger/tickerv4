@@ -185,9 +185,9 @@
                                 </div>
                             </div> <!-- end row-->
                             <div class="pull-left mt-2">
-                                {{filters.epic.data.last.0.market_avg_price_24h|check_arrow|safe}}
-                               <span class="mr-2 color-{{filters.epic.data.last.0.market_avg_price_24h|check_color}}" style="font-size: 1.5rem; font-weight: bold;">
-                                   {{filters.epic.data.last.0.market_avg_price_24h|floatformat:-1}}%
+                                {{filters.epic.data.last.0.percentage_change_24h|check_arrow|safe}}
+                               <span class="mr-2 color-{{filters.epic.data.last.0.percentage_change_24h|check_color}}" style="font-size: 1.5rem; font-weight: bold;">
+                                   {{filters.epic.data.last.0.percentage_change_24h|floatformat:-1}}%
                                 </span>
                                 change in last 24 hours.
                             </div>
@@ -269,11 +269,11 @@
                         </div> <!-- end row-->
                         <div class="pull-left mt-2">
                             <div class="pull-left mt-2">
-                            {{filters.epic.data.last.0.market_cap_change_24h|check_arrow|safe}}
-                           <span class="mr-2 color-{{filters.epic.data.last.0.market_cap_change_24h|check_color}}" style="font-size: 1.5rem; font-weight: bold;">
-                               {{filters.epic.data.last.0.market_cap_change_24h|floatformat:-1}}%
-                            </span>
-                            change in last 24 hours.
+<!--                            {{filters.epic.data.last.0.market_cap_change_24h|check_arrow|safe}}-->
+<!--                           <span class="mr-2 color-{{filters.epic.data.last.0.market_cap_change_24h|check_color}}" style="font-size: 1.5rem; font-weight: bold;">-->
+<!--                               {{filters.epic.data.last.0.market_cap_change_24h|floatformat:-1}}%-->
+<!--                            </span>-->
+<!--                            change in last 24 hours.-->
                             </div>
                         </div>
                     </div>

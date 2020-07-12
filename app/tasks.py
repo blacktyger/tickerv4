@@ -46,3 +46,8 @@ def up_data2():
     update(tasks)
     return f'OK'
 
+
+def update_all():
+    tasks = [pool_data, coingecko_data, explorer_data, citex_data, vitex_data, epic_data, mw_charts, main_charts]
+    update(tasks)
+    return f'OK'
