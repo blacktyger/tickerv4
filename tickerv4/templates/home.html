@@ -1,0 +1,1039 @@
+{% extends "layouts/base-site.html" %} {% load calculations %} {% load humanize %} {% load static %}
+
+{% block title %} Dashboard {% endblock %}
+
+{% block content %}
+<script>
+
+</script>
+<head>
+    <style>
+    .bg-ldark {
+        background-color: rgb(56, 56, 56, 0.7);
+    }
+    .tables-color {
+        color: #333333;
+        font-weight: bold;
+        font-size: 1.5rem;
+    }
+    .dollar-color {
+        color: rgb(159, 223, 159);
+    }
+    .card-title{
+        font-color: white;
+    }
+    .widget {
+        border-radius: 8px;
+    }
+    .text {
+        font-size: 1.4rem;
+    }
+    .widget-hover:hover {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    }
+    .num-md-white {
+        font-weight: bold;
+        font-size: 1.5rem;
+    }
+    .num-xs-white {
+        font-weight: bold;
+        font-size: 1.25rem;
+    }
+    .widget-height-min {
+        min-height: 10px;
+
+    }
+    .widget-height-xs {
+        min-height: 120px;
+
+    }
+    .widget-height-md {
+        min-height: 120px;
+
+    }
+    .widget-height-lg {
+        min-height: 320px;
+    }
+    .row-flex {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display:         flex;
+        flex-direction: row;
+    }
+    .bg-trans-1 {
+        background-color: rgb(55, 58, 59, 0.0);
+    }
+
+    </style>
+</head>
+<div class="row d-flex align-items-center">
+    <div class="col-lg-4 mb-4 pl-5">
+        <img class="img"  src="{% static 'imgs/logo2.png' %}" height="100px">
+    </div>
+    <div class="col-lg-8 px-5">
+        <section class="widget bg-trans-1">
+            <div class="text">
+                <div class="container-flex">
+                    <div class="row">
+                        <div class="col-lg-6 text-center">
+                        {% for coin in other_coins %}
+                            <span class="label bg-ldark pt-2 px-2 mb-1 mx-1" style="border-radius: 25px;">
+                                <img class="img mb-2 py-1" src="{{coin.coingecko.last.data.img}}" height="28">
+                                <span class="num-md-white">
+                                    <i class="fa fa-dollar dollar-color"></i>
+                                    {{coin.coingecko.last.data.price|floatformat:-1|intcomma}}
+                                    {{coin.coingecko.last.data.change_24h|check_arrow|safe}}
+                                </span>
+                            </span>
+                        {% endfor %}
+                        </div>
+                        <div class="col-lg-5 my-2 text-center">
+                            <span class="num-xs-white">
+                                Last update: {{filters.epic.data.last.0.updated|timesince }} ago
+                                <span class="label mx-2 px-2 py-1" style="border-radius: 25px; background-color: rgb(56, 56, 56, 0.4);">
+                                    {{filters.epic.data.last.0.updated|date:"jS M, H:i T"}}
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+<div class="row px-4">
+    <div class="col-lg-12 hidden-xs hidden-sm hidden-md">
+        <section class="widget widget-height-min">
+            <section class="feed-item">
+                <div class="icon pull-left">
+                    <img class="img px-1 py-1" src="{% static 'imgs/btn1.png' %}" alt="" height="22">
+                </div>
+                <div class="feed-item-body">
+                    <div class="text">
+                        <p>
+                            <span class="num-md-white">Epic-Cash</span> worldwide prices:
+                            {% for c in currency %}
+                            <span class="ml-1">
+                                <img class="ml-3 mr-1" src="{{c.flag}}" height="18px">{{c.symbol}}:
+                                <span class="num-md-white">{{c.price|times:filters.epic.data.usdt.avg_price|floatformat:-3}}</span>
+                            </span>
+                            {% endfor %}
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </section>
+    </div>
+    <div class="col-lg-12 hidden-lg hidden-xl">
+        <section class="widget widget-height-min">
+            <section class="feed-item">
+                <div class="icon pull-left">
+                    <img class="img px-1 py-1" src="{% static 'imgs/btn1.png' %}" alt="" height="22">
+                </div>
+                <div class="feed-item-body">
+                    <div class="text">
+                        <p>
+                            <span class="num-md-white">Epic-Cash</span> worldwide prices:
+                        </p>
+                        <p>
+                            {% for c in currency %}
+                            <span>
+                                <img class="ml-1 mr-1" src="{{c.flag}}" height="18px">{{c.symbol}}:
+                                <span class="num-md-white">{{c.price|times:filters.epic.data.usdt.avg_price|floatformat:-3}}</span>
+                            </span>
+                            {% endfor %}
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </section>
+    </div>
+</div>
+
+
+<div class="col-lg-9">
+    <div class="row-flex row">
+        <div class="col-lg-4">
+            <section class="widget widget-height-xs">
+                <section class="feed-item">
+                    <div class="icon pull-left">
+                        <i class="fa fa-money"></i>
+                    </div>
+                    <div class="feed-item-body">
+                        <div class="text">
+                            <h5 class="card-title mt-1 pb-1 text-white text-truncate">
+                                <strong>Average price</strong>
+                            </h5>
+                            <hr>
+                            <div class="row align-items-center mb-3">
+                                <div class="col-auto">
+                                    <span class="my-2 py-1" style="font-size: 2.2rem;">
+                                        <strong>
+                                            <i class="fa fa-dollar dollar-color"></i>
+                                            {{filters.epic.data.usdt.avg_price|floatformat:-4}}
+                                        </strong>
+                                    </span>
+                                </div>
+                                <div class="col-xl-7 col-lg-7 col-xs-7">
+                                    <span class="my-2 py-1" style="font-size: 2.2rem;">
+                                        <strong>
+                                            <i class="fa fa-bitcoin color-orange"></i>
+                                            {{filters.epic.data.btc.avg_price|floatformat:-8}}
+                                       </strong>
+                                    </span>
+                                </div>
+                            </div> <!-- end row-->
+                            <div class="pull-left mt-2">
+                                {{filters.epic.data.last.0.market_avg_price_24h|check_arrow|safe}}
+                               <span class="mr-2 color-{{filters.epic.data.last.0.market_avg_price_24h|check_color}}" style="font-size: 1.5rem; font-weight: bold;">
+                                   {{filters.epic.data.last.0.market_avg_price_24h|floatformat:-1}}%
+                                </span>
+                                change in last 24 hours.
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </section>
+        </div>
+        <div class="col-lg-4">
+            <section class="widget widget-height-xs">
+                <section class="feed-item">
+                    <div class="icon pull-left">
+                        <i class="fa fa-bar-chart-o"></i>
+                    </div>
+                    <div class="feed-item-body ">
+                        <div class="text">
+                            <h5 class="card-title mt-1 pb-1 text-white text-truncate">
+                                <strong>Volume 24 hours</strong>
+                            </h5>
+                            <hr>
+                            <div class="row align-items-center mb-3">
+                                <div class="col-auto">
+                                    <span class="my-2 mr-2 py-1" style="font-size: 2.2rem;">
+                                        <strong>
+                                            <img class="img px-1" src="/static/imgs/btn1.png" alt="" height="25">
+                                            {{volumes.total.all|floatformat:0|intcomma}}
+                                        </strong>
+                                    </span>
+                                        Worth:
+                                    <i class="fa fa-dollar dollar-color"></i>
+                                    <span class="num-md-white mr-2">
+                                        {{volumes.total.all|epic_to:'usdt'|floatformat:0|intcomma}}
+                                    </span>
+                                    <i class="fa fa-bitcoin color-orange"></i>
+                                    <span class="num-md-white">
+                                        {{volumes.total.all|epic_to:'btc'|floatformat:3|intcomma}}
+                                    </span>
+                                </div>
+                            </div> <!-- end row-->
+                            <div class="pull-left mt-2">
+                                <span class="text-warning" style="font-size: 1.5rem; font-weight: bold;">
+                                    {{volumes.total.all|get_percent:filters.epic.explorer.circulating}}%
+                                </span>
+                                 of circulating supply
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </section>
+        </div>
+                <div class="col-lg-4">
+            <section class="widget widget-height-xs ">
+                <section class="feed-item">
+                    <div class="icon pull-left">
+                        <i class="fa fa-bar-chart-o"></i>
+                    </div>
+                    <div class="feed-item-body">
+                        <h5 class="card-title mt-1 pb-1 text-white text-truncate">
+                                <strong>Market Capitalization</strong>
+                        </h5>
+                        <hr>
+                        <div class="row align-items-center mb-3">
+                            <div class="col-auto">
+                                <span class="my-2 mr-2 py-1" style="font-size: 2.2rem;">
+                                    <strong>
+                                        <i class="fa fa-dollar dollar-color"></i>
+                                        {{filters.epic.explorer.circulating|epic_to:'usdt'|floatformat:0|intcomma}}
+                                    </strong>
+                                </span>
+                            </div>
+                            <div class="col-6">
+                                <span class="my-2 mr-2 py-1" style="font-size: 2.2rem;">
+                                    <strong>
+                                        <i class="fa fa-bitcoin color-orange ml-3"></i>
+                                        {{filters.epic.explorer.circulating|epic_to:'btc'|floatformat:-3|intcomma}}
+                                    </strong>
+                                </span>
+                            </div>
+                        </div> <!-- end row-->
+                        <div class="pull-left mt-2">
+                            <div class="pull-left mt-2">
+                            {{filters.epic.data.last.0.market_cap_change_24h|check_arrow|safe}}
+                           <span class="mr-2 color-{{filters.epic.data.last.0.market_cap_change_24h|check_color}}" style="font-size: 1.5rem; font-weight: bold;">
+                               {{filters.epic.data.last.0.market_cap_change_24h|floatformat:-1}}%
+                            </span>
+                            change in last 24 hours.
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </section>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6" >
+            <section class="widget widget-height-lg" >
+                <section class="feed-item">
+                    <div class="icon pull-left">
+                        <i class="fa fa-line-chart"></i>
+                    </div>
+                    <div class="feed-item-body">
+                        <div class="text my-0 mx-0 px-2">
+                            <p class="card-title mb-0 pb-1 text-white text-truncate">
+                                <strong>In last 7 days:</strong>
+                            </p>
+                             <div class="row">
+                                 <div class="col-5">
+                                    <p>
+                                    Average price:
+                                    {% for key, value in high_low_7d.items %}
+                                        <strong>
+                                          {% if key == 'average' %}
+                                            <i class="fa fa-dollar dollar-color"></i>
+                                            <span> {{value|floatformat:-4}}</span>
+                                          {% endif %}
+                                        </strong>
+                                    {% endfor %}
+                                    </p>
+                                    <p style="font-size: 1.4rem;">
+                                        {% for key, value in high_low_7d.items %}
+                                              {% if key == 'low' %}
+                                                {{key.capitalize}}:
+                                                <span class="color-orange"> <strong>{{value|floatformat:-4}}</strong></span>
+                                                  {% elif key == 'high' %}
+                                                {{key.capitalize}}:
+                                                <span class="color-green"> <strong>{{value|floatformat:-4}}</strong></span>
+                                              {% endif %}
+                                        {% endfor %}
+                                    </p>
+                                 </div>
+                                 <div class="col-7">
+                                     <p>
+                                        Average price:
+                                        {% for key, value in high_low_7d_btc.items %}
+                                            <strong>
+                                              {% if key == 'average' %}
+                                                <i class="fa fa-bitcoin color-orange"></i>
+                                                <span> {{value|floatformat:-8}}</span>
+                                              {% endif %}
+                                            </strong>
+                                        {% endfor %}
+                                     </p>
+                                     <p style="font-size: 1.4rem;">
+                                        {% for key, value in high_low_7d_btc.items %}
+                                                {% if key == 'high' %}
+                                                {{key.capitalize}}:
+                                                <span class="color-green"> <strong>{{value|floatformat:-8}}</strong></span>
+                                                {% elif key == 'low' %}
+                                                {{key.capitalize}}:
+                                                <span class="color-orange"> <strong>{{value|floatformat:-8}}</strong></span>
+                                              {% endif %}
+                                        {% endfor %}
+                                    </p>
+                                 </div>
+                             </div>
+                            <p>Change:
+                                {{filters.epic.data.usdt.percentage_change_7d|check_arrow|safe}}
+                               <span class="mr-2 color-{{filters.epic.data.usdt.percentage_change_7d|check_color}}" style="font-size: 1.5rem; font-weight: bold;">
+                                   {{filters.epic.data.usdt.percentage_change_7d}}%
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </section>
+                <div class="graphs mt-0 mb-0">
+                    {{ filters.charts.epic_7d_price.div | safe }}
+                    {{ filters.charts.epic_7d_price.script | safe }}
+                </div>
+                <p class="text-center mb-0">
+                    Average price 7 days from exchanges powered by
+                    <a href="https://www.coingecko.com/en/coins/epic-cash" target="_blank">CoinGecko.com </a></small></h4>
+                </p>
+            </section>
+        </div>
+        <div class="col-lg-6">
+            <section class="widget widget-height-lg">
+                <section class="feed-item">
+                    <div class="icon pull-left">
+                        <i class="fa fa-tasks"></i>
+                    </div>
+                    <div class="feed-item-body">
+                        <div class="text">
+                            <p class="card-title mb-2 pb-1 text-white text-truncate">
+                                <strong>Volume in last 24 hours details</strong>
+                            </p>
+                        </div>
+                    </div>
+                </section>
+                {% for k, v in volumes.percent.items %}
+                {% if k == "btc" or k == "usdt" %}
+                <section class="feed-item">
+                    <div class="feed-item-body">
+                        <div class="text">
+                            <section class="feed-item">
+                                <div class="feed-item-body">
+                                    <div class="text">
+                                        <img class="img" src="{% static 'imgs/btn1.png' %}" alt="" height="15">
+                                        <span class="num-md-white"> {{v.0|floatformat:-0|intcomma}} </span>
+                                        coins traded in
+                                        {% if k == 'btc' %}
+                                            Bitcoin worth:
+                                            <i class="fa fa-bitcoin color-orange"></i>
+                                            {{v.0|epic_to:'btc'|floatformat:-2|intcomma}}
+                                         ||
+                                            <i class="fa fa-dollar dollar-color"></i>
+                                            {{v.0|epic_to:'usdt'|floatformat:0|intcomma}}
+                                        {% elif k == 'usdt' %}
+                                            USD(T) worth:
+                                            <i class="fa fa-bitcoin color-orange"></i>
+                                            {{v.0|epic_to:'btc'|floatformat:-2|intcomma}}
+                                         ||
+                                            <i class="fa fa-dollar dollar-color"></i>
+                                            {{v.0|epic_to:'usdt'|floatformat:0|intcomma}}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </section>
+                             <section class="feed-item">
+                                 <div class="icon pull-left">
+                                    {% if k == 'btc' %}
+                                        <i class="fa fa-bitcoin color-orange"></i>
+                                    {% elif k == 'usdt' %}
+                                        <i class="fa fa-dollar dollar-color"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="feed-item-body">
+                                    <div class="text">
+                                        <div class="progress">
+                                            <div class="progress-bar text-white
+                                            {%if k == 'btc' %}
+                                            bg-warning
+                                            {%else%}
+                                            bg-info
+                                            {%endif%}"
+                                              style="width: {% if v.1 > 17 %}{{v.1}}%{%else%}10%{%endif%};">
+                                                <span class="num-md-white"> {{v.1}}% </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                             </section>
+                        </div>
+                    </div>
+                </section>
+                {% endif %}
+                {% endfor %}
+                <section class="feed-item">
+                    <div class="feed-item-body">
+                        <div class="text">
+                            <section class="feed-item">
+                                <div class="feed-item pr-3">
+                                    <div class="feed-item-body">
+                                        <div class="text">
+                                            <div class="row">
+                                                {% for k, v in volumes.items %}
+                                                    {% if k == "citex" %}
+                                                        <div class="col-6 text-left">
+                                                            <img class="img" src="{% static 'imgs/btn1.png' %}" height="15">
+                                                            <span class="num-md-white">{{v.total|floatformat:0|intcomma}}</span> traded on
+                                                            <span class="num-md-white">{{k.capitalize}}</span>
+                                                        </div>
+                                                    {% elif k == "vitex" %}
+                                                        <div class="col-6 text-right">
+                                                            <img class="img" src="{% static 'imgs/btn1.png' %}" height="15">
+                                                            <span class="num-md-white">{{v.total|floatformat:0|intcomma}}</span> traded on
+                                                            <span class="num-md-white">{{k.capitalize}}</span>
+                                                        </div>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                            <section class="feed-item">
+                                <div class="feed-item pr-3">
+                                    <div class="icon pull-left">
+                                        <img class="img px-1 py-1" src="{% static 'imgs/btn1.png' %}">
+                                    </div>
+                                    <div class="feed-item-body">
+                                        <div class="text">
+                                            <div class="progress">
+                                            {% for k, v in volumes.percent.items %}
+                                                {% if k == "CITEX" or k == "ViteX" %}
+                                                <div class="progress-bar text-white {{v.1|colour}}"
+                                                               style="width: {% if v.1 > 25 %}{{v.1}}%{%else%}25%{%endif%}">
+                                                    <span class="num-md-white">{{k}}</span>
+                                                </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </section>
+            </section>
+        </div>
+    </div>
+    <!--END 3RD ROW-->
+
+    <!-- EXCHANGES TABS -->
+    <div class="row">
+        <div class="col-lg-12">
+            <section class="widget">
+                <header>
+                </header>
+                    <!-- EXCHANGES TAB -->
+                <table class="table">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Last price</th>
+                    <th class="hidden-xs hidden-sm">24h High / Low</th>
+                    <th class="hidden-xs hidden-sm">Bid / Ask</th>
+                    <th class="hidden-xs hidden-sm">Spread</th>
+                    <th>24h Volume</th>
+                    <th class="hidden-xs hidden-sm">Last Trade</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for k, v in ex_tickers.items %}
+                    <tr>
+                        <td><a href="{{k.url}}">
+                            <img class="img-rounded mb-1 pr-1" src="{{ k.image }}" alt="" height="35">
+                            <span class="num-md-white">{{k.name}}</span>
+                        </a>
+                        </td>
+                        <td>
+                            {% for k ,v in v.items %}
+                                <p>
+                                    {% if k == 'usdt' %}
+                                        <i class="fa fa-dollar text-success"></i>
+                                    {% elif k == 'btc' %}
+                                        <i class="fa fa-bitcoin color-orange"></i>
+                                    {% endif %}
+                                    <span class="text-bold">
+                                       <a href="{{v.trading_url}}" target="_blank">
+                                           <span class="num-md-white">{{v.last_price|floatformat:-8}}</span>
+                                       </a>
+                                    </span>
+                                </p>
+                            {% endfor %}
+                        </td>
+                        <td class="hidden-xs hidden-sm">
+                            {% for k ,v in v.items %}
+                                <p>
+                                    {% if k == 'usdt' %}
+                                        <i class="fa fa-dollar text-success"></i>
+                                    {% elif k == 'btc' %}
+                                        <i class="fa fa-bitcoin color-orange"></i>
+                                    {% endif %}
+                                        <span class="tables-color">{{v.high|floatformat:-8}}
+                                             / {{v.low|floatformat:-8}}
+                                        </span>
+                                </p>
+                            {% endfor %}
+                        </td>
+                        <td class="hidden-xs hidden-sm">
+                            {% for k ,v in v.items %}
+                                <p>
+                                    {% if k == 'usdt' %}
+                                        <i class="fa fa-dollar text-success"></i>
+                                    {% elif k == 'btc' %}
+                                        <i class="fa fa-bitcoin color-orange"></i>
+                                    {% endif %}
+                                        <span class="tables-color">{{v.bid|floatformat:-8}}
+                                             / {{v.ask|floatformat:-8}}
+                                        </span>
+                                </p>
+                            {% endfor %}
+                        </td>
+                        <td class="hidden-xs hidden-sm">
+                            {% for k ,v in v.items %}
+                            <p>
+                                <span class="tables-color">{{ v.spread }}%</span>
+                            </p>
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% for k ,v in v.items %}
+                                <p>
+                                    <img class="img" src="{% static 'imgs/btn1.png' %}" alt="" height="15">
+                                    <span class="tables-color">{{v.volume|floatformat:-2|intcomma}}</span>
+                                </p>
+                            {% endfor %}
+                        </td>
+                        <td class="hidden-xs hidden-sm">
+                            {% for k ,v in v.items %}
+                                <p>
+                                    <span class="tables-color">{{v.last_trade|timesince }} ago</span>
+                                </p>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+        </div>
+    </div>
+
+    <!-- MimbleWimble COINS STATS-->
+
+    <div class="row">
+        <div class="col-lg-12">
+            <section class="widget">
+                <header>
+                    <h4>
+                        MimbleWimble
+                        <small>
+                            coins statistics
+                        powered by
+                        <a href="https://www.coingecko.com/" target="_blank"></small> CoinGecko.com</a>
+                    </h4>
+                    <div class="widget-controls">
+                    </div>
+                </header>
+                <div class="widget-table-overflow">
+                    <table id="mwcoins" class="table table-striped table-lg mt-sm mb-0 sources-table">
+                        <thead>
+                        <tr>
+                            <th>Coin</th>
+                            <th>Price</th>
+                            <th>Price Change 7d</th>
+                            <th class="hidden-xs">Trend</th>
+                            <th>Market Cap</th>
+                            <th class="hidden-xs">Volume 24h</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for k, v in mw_data.items %}
+                            {% if v.symbol == 'EPIC' %}
+                            <tr style="border-style: solid; border-width: 1px; border-color: gold; background-color: rgba(51, 51, 51, 0.3)">
+                            {% else %}
+                            <tr style="">
+                            {% endif %}
+                                <td class="ml-0 px-1">
+                                    <img src="{{ v.img }}" class="rounded px-2" height="30px">
+                                    <span class="label label-important" style="font-size: 1.0rem">
+                                        {{v.symbol.upper}}
+                                    </span>
+                                    <span class="hidden-xs hidden-sm hidden-md">
+                                        <strong>{{v.name}}</strong>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="tables-color">
+                                        <i class="fa fa-dollar dollar-color"></i>
+                                        {{v.price|floatformat:-3}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="tables-color">{{v.change_7d|floatformat:-1}}%</span>
+                                </td>
+                                <td class="chart-cell hidden-xs">
+                                    {{ v.chart.script|safe }}
+                                    {{ v.chart.div|safe }}
+                                </td>
+                                <td class="tables-color">
+                                    {% if v.market_cap < '1' %}
+                                            N / A
+                                    {% else %}
+                                        <i class="fa fa-dollar dollar-color"></i>
+                                        {{v.market_cap|floatformat:0|intcomma}}
+                                    {% endif %}
+                                </td>
+                                <td class="hidden-xs tables-color">
+                                    <i class="fa fa-dollar dollar-color"></i>
+                                    <strong>{{v.volume|floatformat:0|intcomma}}</strong>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<!--        RIGHT SIDE PANELS-->
+
+<div class="col-lg-3">
+    <section class="widget widget-height-xs">
+        <section class="feed-item">
+            <div class="icon pull-left">
+                <i class="fa fa-cubes"></i>
+            </div>
+            <div class="feed-item-body">
+                <div class="text">
+                    <p>
+                        <strong>Blockchain</strong>
+                    </p>
+                    <p>
+                        Block height:
+                        <span class="num-md-white">{{filters.epic.explorer.height|intcomma}}</span>
+                    </p>
+                    <p>
+                        Block reward:
+                        <img class="img px-1 mb-1" src="{% static 'imgs/btn1.png' %}" alt="" height="17">
+                        <span class="num-md-white">{{filters.epic.explorer.reward|intcomma}}</span>
+                    </p>
+                    <p>
+                        Block Subsidy Value: <i class="fa fa-dollar dollar-color"></i>
+                        <span class="num-md-white">{{filters.epic.data.usdt.block_value|floatformat:-2}}</span>
+                    </p>
+                </div>
+            </div>
+        </section>
+         <section class="feed-item">
+            <div class="icon pull-left">
+                <i class="fa fa-gears"></i>
+            </div>
+            <div class="feed-item-body">
+                <div class="text py-1">
+                    <p>
+                        <strong>Mined in last 24 hours:</strong>
+                    </p>
+                    <p>
+                        <img class="img px-1" src="{% static 'imgs/btn1.png' %}" alt="" height="17">
+                        <span class="num-md-white">{{daily_mined.coins|intcomma}}</span>
+                         coins
+                    </p>
+                    <p>
+                        <img class="img px-1" src="{% static 'imgs/btn1.png' %}" alt="" height="17">
+                        <span class="num-md-white">{{daily_mined.blocks|intcomma}}</span>
+                        blocks
+                    </p>
+                    <p>
+                    Worth:
+                    <i class="fa fa-dollar dollar-color"></i>
+                    <span class="num-md-white">{{daily_mined.coins|epic_to:'usdt'|floatformat:0|intcomma}}</span>
+                      ||
+                    <i class="fa fa-bitcoin color-orange"></i>
+                    <span class="num-md-white">{{daily_mined.coins|epic_to:'btc'|floatformat:-2}}</span>
+                    </p>
+                    <p>
+                    <span class="num-md-white">
+                        {{daily_mined.coins|get_percent:filters.epic.explorer.circulating}}
+                    </span>
+                    % of circulating.
+                    </p>
+                </div>
+            </div>
+        </section>
+        <section class="feed-item">
+            <div class="icon pull-left">
+                <i class="fa fa-bullseye"></i>
+            </div>
+            <div class="feed-item-body">
+                <div class="text py-1">
+                    <p>
+                        <strong>Current Target Difficulty:</strong>
+                    </p>
+                    <p>
+                        ProgPow: <span class="num-md-white"> {{filters.epic.explorer.target_diff.progpow|intword}}</span>
+                    </p>
+                    <p>
+                        RandomX: <span class="num-md-white"> {{filters.epic.explorer.target_diff.randomx|intword}}</span>
+                    </p>
+                    <p>
+                        Cuckoo: <span class="num-md-white"> - </span>
+                    </p>
+                    </div>
+                </div>
+        </section>
+    </section>
+    <section class="widget">
+        <div class="body">
+            <div class="wrapper">
+                <section class="feed-item">
+                    <div class="icon pull-left">
+                        <i class="fa fa-refresh"></i>
+                    </div>
+                    <div class="feed-item-body">
+                        <div class="text">
+                            <p><strong>In Circulation:</strong></p>
+                            <p>
+                                <img class="img px-1" src="{% static 'imgs/btn1.png' %}" alt="" height="17">
+                                <span class="num-md-white">{{filters.epic.explorer.circulating|intcomma}} </span>
+                                out of <span class="num-md-white"> 21 million</span>
+                            </p>
+                            <p>
+                                Worth:
+                                <i class="fa fa-dollar dollar-color"></i>
+                                <span class="num-md-white">
+                                    {{filters.epic.explorer.circulating|epic_to:'usdt'|floatformat:0|intcomma}}</span>
+                                 ||
+                                <i class="fa fa-bitcoin color-orange"></i>
+                                <span class="num-md-white"> {{filters.epic.explorer.circulating|epic_to:'btc'|floatformat:-2}}</span>
+                            </p>
+                            <div class="" style="width: 61%;">
+                                <div class="pull-right">
+                                    Total
+                                </div>
+                                <div class="info">Circulating</div>
+                                <div class="progress progress-sm mt-xs js-progress-animate">
+                                    <div class="progress-bar progress-bar-striped progress-bar-success"
+                                         style="width: {{filters.epic.explorer.circulating|get_percent:21000000}}%;">
+                                        {{filters.epic.explorer.circulating|get_percent:'21000000'}}%
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="feed-item">
+                    <div class="icon pull-left">
+                        <i class="fa fa-rocket"></i>
+                    </div>
+                    <div class="feed-item-body">
+                        <div class="text">
+                            <p>
+                                <strong>All time high price:</strong>
+                            </p>
+                            {% for k in filters.epic.data.last %}
+                                <p>
+                                    {% if k.pair == 'btc' %}
+                                    <i class="fa fa-bitcoin color-orange"></i>
+                                    {% elif k.pair == 'usdt' %}
+                                    <i class="fa fa-dollar dollar-color"></i>
+                                    {% endif %}
+                                    <span class="num-md-white"> {{k.ath}} </span>
+                                     ||
+                                    <span class="num-md-white"> {{k.ath_change}} </span> %
+                                    {{k.ath_change|check_arrow|safe}}
+                                </p>
+                            {% endfor %}
+                            <p>
+                                <i class="fa fa-history text-light"></i>
+                                <span class="text-light">
+                                    {% with filters.epic.data.last.0 as k %}
+                                    {{k.ath_date|naturaltime}}
+                                     ({{k.ath_date|date:"d/m/y"}}')
+                                    {% endwith %}
+                                </span>
+                            </p>
+
+                            <div class="row">
+                                <div class="col-5">
+                                </div>
+                                <div class="col-7">
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div class="col-lg-3">
+    <section class="widget widget-height-xs">
+        <section class="feed-item">
+            <div class="pull-left">
+                <i class="fa fa-clock-o mt-1" style="font-size: 2rem;"></i>
+            </div>
+            <div class="feed-item-body">
+                <div class="text" style="font-size: 1.5rem;">
+                    <p>
+                        <strong>
+                        Next halving:
+                            <span class="label mx-2 px-2 py-1" style="font-size: 1.4rem; border-radius: 25px;background-color: rgb(56, 56, 56, 0.4);">
+                                {{halving.date|date:"d M Y"}}
+                            </span>
+                        </strong>
+                    </p>
+                    <p>
+                        At block height: <strong>{{halving.height|intcomma}}</strong>
+                    </p>
+                    <p>
+                        <strong>
+                            <i class="fa fa-history text-warning mr-2"></i>
+                            {{ halving.date|timeuntil}}
+                        </strong>
+                        <span class="text-warning" style="font-size: 1.2rem;"><br>
+                            (<strong>{{filters.epic.explorer.height|minus_back:halving.height|floatformat:0|intcomma}}
+                            blocks</strong>)</span> left.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </section>
+</div>
+
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+    <!-- page specific scripts -->
+    <!-- page libs -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bokeh/2.0.1/bokeh.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bokeh/2.0.1/bokeh-widgets.min.js"></script>
+    <script src="/static/assets/lib/slimScroll/jquery.slimscroll.min.js"></script>
+    <script src="/static/assets/lib/jquery.sparkline/index.js"></script>
+    <script type='text/javascript' src='//cdn.jsdelivr.net/jquery.marquee/1.3.1/jquery.marquee.min.js'></script>
+
+    <script src="/static/assets/lib/backbone/backbone.js"></script>
+    <script src="/static/assets/lib/backbone.localStorage/build/backbone.localStorage.min.js"></script>
+
+    <script src="/static/assets/lib/d3/d3.min.js"></script>
+    <script src="/static/assets/lib/nvd3/build/nv.d3.min.js"></script>
+
+    <!-- page application js -->
+    <script src="/static/assets/js/index.js"></script>
+    <script src="/static/assets/js/chat.js"></script>
+
+    <!-- page template -->
+    <script type="text/template" id="message-template">
+        <div class="sender pull-left">
+            <div class="icon">
+                <img src="/static/assets/img/2.png" class="img-circle" alt="">
+            </div>
+            <div class="time">
+                just now
+            </div>
+        </div>
+        <div class="chat-message-body">
+            <span class="arrow"></span>
+            <div class="sender"><a href="#">Tikhon Laninga</a></div>
+            <div class="text">
+                <%- text %>
+            </div>
+        </div>
+    </script>
+
+{% endblock javascripts %}
+<section class="widget large">
+                <header>
+                    <h4>
+                        Chat
+                    </h4>
+                    <div class="widget-controls">
+                        <a title="Options" href="#"><i class="glyphicon glyphicon-cog"></i></a>
+                        <a data-widgster="close" title="Close" href="#"><i class="glyphicon glyphicon-remove"></i></a>
+                    </div>
+                </header>
+                <div class="body">
+                    <div id="chat" class="chat">
+                        <div id="chat-messages" class="chat-messages">
+                            <div class="chat-message">
+                                <div class="sender pull-left">
+                                    <div class="icon">
+                                        <img src="/static/assets/img/2.png" class="img-circle" alt="">
+                                    </div>
+                                    <div class="time">
+                                        4 min
+                                    </div>
+                                </div>
+                                <div class="chat-message-body">
+                                    <span class="arrow"></span>
+                                    <div class="sender"><a href="#">Tikhon Laninga</a></div>
+                                    <div class="text">
+                                        Hey Sam, how is it going? But I must explain to you how all this mistaken
+                                        idea of denouncing of a pleasure and praising pain was born
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="chat-message">
+                                <div class="sender pull-right">
+                                    <div class="icon">
+                                        <img src="/static/assets/img/1.png" class="img-circle" alt="">
+                                    </div>
+                                    <div class="time">
+                                        3 min
+                                    </div>
+                                </div>
+                                <div class="chat-message-body on-left">
+                                    <span class="arrow"></span>
+                                    <div class="sender"><a href="#">Cenhelm Houston</a></div>
+                                    <div class="text">
+                                        Pretty good. Doing my homework..  No one rejects, dislikes, or avoids
+                                        pleasure itself, because it is pleasure, but because
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="chat-message">
+                                <div class="sender pull-left">
+                                    <div class="icon">
+                                        <img src="/static/assets/img/2.png" class="img-circle" alt="">
+                                    </div>
+                                    <div class="time">
+                                        2 min
+                                    </div>
+                                </div>
+                                <div class="chat-message-body">
+                                    <span class="arrow"></span>
+                                    <div class="sender"><a href="#">Tikhon Laninga</a></div>
+                                    <div class="text">
+                                        Any chance to go out? To take a trivial example, which of us ever undertakes
+                                        laborious physical exercise, except to obtain some advantage
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="chat-message">
+                                <div class="sender pull-right">
+                                    <div class="icon">
+                                        <img src="/static/assets/img/1.png" class="img-circle" alt="">
+                                    </div>
+                                    <div class="time">
+                                        2 min
+                                    </div>
+                                </div>
+                                <div class="chat-message-body on-left">
+                                    <span class="arrow"></span>
+                                    <div class="sender"><a href="#">Cenhelm Houston</a></div>
+                                    <div class="text">
+                                        .. Maybe 40-50 mins. I don't know exactly. On the other hand, we denounce
+                                        with righteous indignation and dislike men who are so beguiled
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="chat-message">
+                                <div class="sender pull-left">
+                                    <div class="icon">
+                                        <img src="/static/assets/img/2.png" class="img-circle" alt="">
+                                    </div>
+                                    <div class="time">
+                                        1 min
+                                    </div>
+                                </div>
+                                <div class="chat-message-body">
+                                    <span class="arrow"></span>
+                                    <div class="sender"><a href="#">Tikhon Laninga</a></div>
+                                    <div class="text">
+                                        Anyway sounds great! These cases are perfectly simple and easy to
+                                        distinguish.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <footer class="chat-footer row">
+                            <div class="col-xs-9">
+                                <input id="new-message" type="text" class="form-control input-transparent" placeholder="Enter your message..">
+                            </div>
+                            <div class="col-xs-3">
+                                <button type="button" id="new-message-btn" class="btn btn-transparent btn-block">Send</button>
+                            </div>
+                        </footer>
+                    </div>
+                </div>
+            </section>

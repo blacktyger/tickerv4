@@ -1,0 +1,939 @@
+{% extends "layouts/base-site.html" %} {% load calculations %} {% load humanize %} {% load static %}
+
+
+{% block title %} Dashboard {% endblock %}
+
+
+
+{% block content %}
+<h2 class="page-title"><img class="img" src="{% static 'imgs/logo2.png' %}" height="100px">
+</h2>
+<div class="col-lg-9">
+    <div class="row">
+        <div class="col-lg-4">
+            <section class="widget">
+                <section class="feed-item">
+                    <div class="icon pull-left">
+                        <i class="fa fa-refresh"></i>
+                    </div>
+                    <div class="feed-item-body">
+                        <div class="text">
+                            <p>In Circulation:
+                                <img class="img px-1" src="{% static 'imgs/btn1.png' %}" alt="" height="17">
+                            <strong>{{filters.epic.explorer.circulating|intcomma}}</strong> out of
+                                <strong>21 million</strong>
+                            </p>
+                            <p>
+                                Worth:
+                                <i class="fa fa-dollar color-green"></i>
+                                <strong>
+                                    {{filters.epic.explorer.circulating|epic_to:'usdt'|floatformat:0|intcomma}}</strong>
+                                 ||
+                                <i class="fa fa-bitcoin color-orange"></i>
+                                <strong> {{filters.epic.explorer.circulating|epic_to:'btc'|floatformat:-2}}</strong>
+                            </p>
+                            <div class="" style="width: 38%;">
+                                <div class="pull-right">
+                                    Total
+                                </div>
+                                <div class="info">Circulating</div>
+                                <div class="progress progress-sm mt-xs js-progress-animate">
+                                    <div class="progress-bar progress-bar-striped progress-bar-success"
+                                         style="width: {{filters.epic.data.all.last.explorer.circulating|get_percent:21000000}}%;">
+                                        {{filters.epic.explorer.circulating|get_percent:'21000000'}}%
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </section>
+        </div>
+        <div class="col-lg-4">
+            <section class="widget">
+                <section class="feed-item">
+                    <div class="icon pull-left">
+                        <i class="fa fa-refresh"></i>
+                    </div>
+                    <div class="feed-item-body">
+                        <div class="text">
+                            <p>In Circulation:
+                                <img class="img px-1" src="{% static 'imgs/btn1.png' %}" alt="" height="17">
+                            <strong>{{filters.epic.explorer.circulating|intcomma}}</strong> out of
+                                <strong>21 million</strong>
+                            </p>
+                            <p>
+                                Worth:
+                                <i class="fa fa-dollar color-green"></i>
+                                <strong>
+                                    {{filters.epic.explorer.circulating|epic_to:'usdt'|floatformat:0|intcomma}}</strong>
+                                 ||
+                                <i class="fa fa-bitcoin color-orange"></i>
+                                <strong> {{filters.epic.explorer.circulating|epic_to:'btc'|floatformat:-2}}</strong>
+                            </p>
+                            <div class="" style="width: 38%;">
+                                <div class="pull-right">
+                                    Total
+                                </div>
+                                <div class="info">Circulating</div>
+                                <div class="progress progress-sm mt-xs js-progress-animate">
+                                    <div class="progress-bar progress-bar-striped progress-bar-success"
+                                         style="width: {{filters.epic.data.all.last.explorer.circulating|get_percent:21000000}}%;">
+                                        {{filters.epic.explorer.circulating|get_percent:'21000000'}}%
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </section>
+        </div>
+            <div class="col-lg-4">
+            <section class="widget">
+                <section class="feed-item">
+                    <div class="icon pull-left">
+                        <i class="fa fa-refresh"></i>
+                    </div>
+                    <div class="feed-item-body">
+                        <div class="text">
+                            <p>In Circulation:
+                                <img class="img px-1" src="{% static 'imgs/btn1.png' %}" alt="" height="17">
+                            <strong>{{filters.epic.explorer.circulating|intcomma}}</strong> out of
+                                <strong>21 million</strong>
+                            </p>
+                            <p>
+                                Worth:
+                                <i class="fa fa-dollar color-green"></i>
+                                <strong>
+                                    {{filters.epic.explorer.circulating|epic_to:'usdt'|floatformat:0|intcomma}}</strong>
+                                 ||
+                                <i class="fa fa-bitcoin color-orange"></i>
+                                <strong> {{filters.epic.explorer.circulating|epic_to:'btc'|floatformat:-2}}</strong>
+                            </p>
+                            <div class="" style="width: 38%;">
+                                <div class="pull-right">
+                                    Total
+                                </div>
+                                <div class="info">Circulating</div>
+                                <div class="progress progress-sm mt-xs js-progress-animate">
+                                    <div class="progress-bar progress-bar-striped progress-bar-success"
+                                         style="width: {{filters.epic.data.all.last.explorer.circulating|get_percent:21000000}}%;">
+                                        {{filters.epic.explorer.circulating|get_percent:'21000000'}}%
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </section>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <section class="widget">
+                <section class="feed-item">
+                    <div class="icon pull-left">
+                        <i class="fa fa-refresh"></i>
+                    </div>
+                    <div class="feed-item-body">
+                        <div class="text">
+                            <p>In Circulation:
+                                <img class="img px-1" src="{% static 'imgs/btn1.png' %}" alt="" height="17">
+                            <strong>{{filters.epic.explorer.circulating|intcomma}}</strong> out of
+                                <strong>21 million</strong>
+                            </p>
+                            <p>
+                                Worth:
+                                <i class="fa fa-dollar color-green"></i>
+                                <strong>
+                                    {{filters.epic.explorer.circulating|epic_to:'usdt'|floatformat:0|intcomma}}</strong>
+                                 ||
+                                <i class="fa fa-bitcoin color-orange"></i>
+                                <strong> {{filters.epic.explorer.circulating|epic_to:'btc'|floatformat:-2}}</strong>
+                            </p>
+                            <div class="" style="width: 38%;">
+                                <div class="pull-right">
+                                    Total
+                                </div>
+                                <div class="info">Circulating</div>
+                                <div class="progress progress-sm mt-xs js-progress-animate">
+                                    <div class="progress-bar progress-bar-striped progress-bar-success"
+                                         style="width: {{filters.epic.data.all.last.explorer.circulating|get_percent:21000000}}%;">
+                                        {{filters.epic.explorer.circulating|get_percent:'21000000'}}%
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </section>
+        </div>
+        <div class="col-lg-6">
+            <section class="widget">
+                <section class="feed-item">
+                    <div class="icon pull-left">
+                        <i class="fa fa-refresh"></i>
+                    </div>
+                    <div class="feed-item-body">
+                        <div class="text">
+                            <p>In Circulation:
+                                <img class="img px-1" src="{% static 'imgs/btn1.png' %}" alt="" height="17">
+                            <strong>{{filters.epic.explorer.circulating|intcomma}}</strong> out of
+                                <strong>21 million</strong>
+                            </p>
+                            <p>
+                                Worth:
+                                <i class="fa fa-dollar color-green"></i>
+                                <strong>
+                                    {{filters.epic.explorer.circulating|epic_to:'usdt'|floatformat:0|intcomma}}</strong>
+                                 ||
+                                <i class="fa fa-bitcoin color-orange"></i>
+                                <strong> {{filters.epic.explorer.circulating|epic_to:'btc'|floatformat:-2}}</strong>
+                            </p>
+                            <div class="" style="width: 38%;">
+                                <div class="pull-right">
+                                    Total
+                                </div>
+                                <div class="info">Circulating</div>
+                                <div class="progress progress-sm mt-xs js-progress-animate">
+                                    <div class="progress-bar progress-bar-striped progress-bar-success"
+                                         style="width: {{filters.epic.data.all.last.explorer.circulating|get_percent:21000000}}%;">
+                                        {{filters.epic.explorer.circulating|get_percent:'21000000'}}%
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </section>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+    <!--            HEADER COIN STATS-->
+            <section class="widget">
+                <header>
+                    <h4>
+                    {% for coin in other_coins %}
+                        <img class="img ml-3" src="{{coin.coingecko.last.data.img}}"  height="25">
+                         ${{coin.coingecko.last.data.price|floatformat:-1|intcomma}}
+                        {{coin.coingecko.last.data.change_24h|check_color|safe}}
+                    {% endfor %}
+                    </h4>
+                    <div class="widget-controls">
+                        <a title="Options" href="#"><i class="glyphicon glyphicon-cog"></i></a>
+                        <a data-widgster="close" title="Close" href="#"><i class="glyphicon glyphicon-remove"></i></a>
+                    </div>
+                    <div class="pull-right">
+                        Last Update: {{filters.epic.data.last.0.updated|timesince }} ago ||
+                            {{filters.epic.data.last.0.updated|date:"jS M, H:i T"}}
+                    </div>
+
+                </header>
+
+                <div class="visits-info well well-sm  mt-5">
+                        <div class="row">
+                            <div class="col-sm-3 col-xs-6">
+                                <div class="key"> Average Price</div>
+                                <div class="value">
+                                    <i class="fa fa-dollar"></i>
+                                    {{filters.epic.data.usdt.last.avg_price|floatformat:-4}}
+                                    {{filters.epic.data.usdt.last.percentage_change_24h|check_color|safe}}
+                                    <br>
+                                    <i class="fa fa-btc"></i>
+                                    {{filters.epic.data.btc.last.avg_price|floatformat:-8}}
+                                    {{filters.epic.data.btc.last.percentage_change_24h|check_color|safe}}
+                                </div>
+                            </div>
+                            <div class="col-sm-3 col-xs-6">
+                                <div class="key"><i class="fa fa-plus-percent"></i>24h Change</div>
+                                <div class="value">
+                                {{filters.epic.data.usdt.last.percentage_change_24h}}%
+                                {{filters.epic.data.usdt.last.percentage_change_24h|check_color|safe}}
+                                </div>
+                            </div>
+                            <div class="col-sm-3 col-xs-6">
+                                <div class="key"> 7d Change</div>
+                                <div class="value">{{filters.epic.data.usdt.last.percentage_change_7d}}%
+                                {{filters.epic.data.usdt.last.percentage_change_7d|check_color|safe}}
+                                </div>
+                            </div>
+                            <div class="col-sm-3 col-xs-6">
+                                <div class="key"><i class="fa fa-bar-chart-o"> 24h Volume</i></div>
+                                <div class="value">
+                                    <img class="img" src="{% static 'imgs/btn1.png' %}" alt="" height="20">
+                                    {{volumes.total.all|floatformat:-1|intcomma}}
+                                </div>
+                            </div>
+                        </div>
+
+                <div class="body no-margin">
+                    <div class="row mt-4">
+                        <!-- PRICE GRAPH -->
+                        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12" style="min-width: 430px">
+                            <h4><i class="fa fa-dollar"></i> Price <small>last 7 days from
+                                <a href="https://www.coingecko.com/en/coins/epic-cash" target="_blank">CoinGecko.com </a></small></h4>
+                            {{ charts.price_div | safe }}
+                            {{ charts.price_script | safe }}
+                        </div>
+                        <!-- VOLUME GRAPH -->
+                        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12" style="min-width: 430px">
+                            <h4><img class="img" src="{% static 'imgs/btn1.png' %}" alt="" height="20">
+                            Volume <small> from exchanges in last 24h</small></h4>
+                            <table class="w-100">
+                                {% for k, v in volumes.percent.items %}
+                                {% if k == "btc" or k == "usdt" %}
+                                <tr>
+                                    <td class="pb-4">
+                                        <div class="feed-item pr-3">
+                                            <div class="icon pull-right">
+                                                {%if k == 'btc' %}
+                                                <i class="fa fa-bitcoin color-orange"></i>
+                                                {%elif k == 'usdt' %}
+                                                <i class="fa fa-dollar color-green"></i>
+                                                {%endif%}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="w-50 pt-1">
+                                        <div class="progress">
+                                            <div class="progress-bar text-white
+                                                {%if k == 'btc' %}
+                                                bg-warning"
+                                                {%else%}
+                                                bg-info"
+                                                {%endif%}
+                                                  style="width: {% if v.1 > 17 %}{{v.1}}%{%else%}10%{%endif%}">
+                                                <strong>
+                                                    {{v.1}}%
+                                                </strong>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-1 pb-4">
+                                        <img class="img" src="{% static 'imgs/btn1.png' %}" alt="" height="15">
+                                        <strong>{{v.0|floatformat:-0|intcomma}}</strong>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                                <tr>
+                                    <td class="w-25 pb-4">
+                                        <div class="feed-item pr-3">
+                                            <div class="icon pull-right">
+                                                <img class="px-2 py-2" src="{% static 'imgs/btn1.png' %}">
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="w-50 pt-1">
+                                      <div class="progress">
+                                          {% for k, v in volumes.percent.items %}
+                                             {% if k == "CITEX" or k == "ViteX" %}
+                                             <div class="progress-bar text-white {{v.1|colour}}"
+                                                   style="width: {% if v.1 > 25 %}{{v.1}}%{%else%}25%{%endif%}">
+                                                 <strong>{{k}}</strong></div>
+                                             {% endif %}
+                                             {% endfor %}
+                                      </div>
+
+                                    </td>
+                                    <td class="px-1 pb-4">
+                                        <img class="img" src="{% static 'imgs/btn1.png' %}" alt="" height="15">
+                                        <strong>{{volumes.total.all|floatformat:-0|intcomma}}</strong>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+    <!-- EXCHANGES TABS -->
+            <section class="widget">
+                <header>
+                    <div class="widget-controls">
+                        <a data-widgster="close" title="Close" href="#"><i class="glyphicon glyphicon-remove"></i></a>
+                    </div>
+                    <ul class="nav nav-tabs">
+                        <li class="active">
+                            <a class="pb-2" href="#exchanges" data-toggle="tab">Exchanges</a>
+                        </li>
+    <!--                        {% for exchange in all_exchanges %}-->
+    <!--                            <li>-->
+    <!--                                <a href="#{{exchange.name}}" class="pb-2" data-toggle="tab">{{exchange.name.capitalize}}</a>-->
+    <!--                            </li>-->
+    <!--                        {% endfor %}-->
+                        <li>
+                            <span class="pl-5">
+                            <strong>Exchange details coming soon!</strong>
+                            </span>
+                        </li>
+                    </ul>
+                </header>
+                <div class="body tab-content">
+                    <!-- EXCHANGES TAB -->
+                    <div id="exchanges" class="tab-pane active clearfix">
+                        <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Last price</th>
+                            <th class="hidden-xs">24h High / Low</th>
+                            <th class="hidden-xs">Spread</th>
+                            <th>24h Volume</th>
+                            <th class="hidden-xs">Last Trade</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for k, v in ex_tickers.items %}
+                        <tr>
+                            <td><a href="{{k.url}}">
+                                <img class="img-rounded mb-2 pr-3" src="{{ k.image }}" alt="" height="35">
+                                <strong>{{k.name}}</strong>
+                            </a>
+                            </td>
+                            <td>
+                                {% for k ,v in v.items %}
+                                    {% if k == 'usdt' %}
+                                    <p class="no-margin">
+                                            <i class="fa fa-dollar text-success"></i>
+                                            <span class="text-bold">
+                                               <a href="{{v.trading_url}}" target="_blank">
+                                                   <strong>{{v.last_price|floatformat:-4}}</strong>
+                                               </a>
+                                            </span>
+                                    </p>
+                                <br>
+                                    {% elif k == 'btc' %}
+                                    <p class="no-margin">
+                                            <i class="fa fa-bitcoin text-info"></i>
+                                            <span class="text-bold">
+                                                <a href="{{v.trading_url}}" target="_blank">
+                                                    <strong>{{v.last_price|floatformat:-8}}</strong>
+                                                </a>
+                                            </span>
+                                    </p>
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td class="hidden-xs">
+                                {% for k ,v in v.items %}
+                                    {% if k == 'usdt' %}
+                                    <p class="no-margin">
+                                            <i class="fa fa-dollar text-success"></i>
+                                            <span class="text-bold">
+                                                <strong>{{v.high|floatformat:-4}}
+                                                     / {{v.low|floatformat:-4}}<strong>
+                                            </span>
+                                    </p>
+                                <br>
+                                    {% elif k == 'btc' %}
+                                    <p class="no-margin">
+                                            <i class="fa fa-bitcoin text-info"></i>
+                                            <span class="text-bold">
+                                                <strong>{{v.high|floatformat:-8}}
+                                                    / {{v.low|floatformat:-8}}<strong>
+                                            </span>
+                                    </p>
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for k ,v in v.items %}
+                                    {% if k == 'usdt' %}
+                                <p><strong>{{ v.spread }}%</strong></p>
+                                <br>
+                                {% elif k == 'btc' %}
+                                <p><strong>{{ v.spread }}%</strong></p>
+                                   {% endif %}
+                                {% endfor %}
+
+                            </td>
+                            <td>
+                                {% for k ,v in v.items %}
+                                    {% if k == 'usdt' %}
+                                    <p class="no-margin">
+                                        <img class="img" src="{% static 'imgs/btn1.png' %}" alt="" height="15">
+                                        <span class="text-bold">
+                                            <strong>{{v.volume|floatformat:-2|intcomma}}<strong>
+                                        </span>
+                                    </p>
+                                <br>
+                                    {% elif k == 'btc' %}
+                                    <p class="no-margin">
+                                        <img class="img" src="{% static 'imgs/btn1.png' %}" alt="" height="15">
+                                        <span class="text-bold">
+                                            <strong>{{v.volume|floatformat:-2|intcomma}}<strong>
+                                        </span>
+                                    </p>
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td class="hidden-xs">
+                                {% for k ,v in v.items %}
+                                    {% if k == 'usdt' %}
+                                    <p class="no-margin">
+                                        <strong>{{v.last_trade|timesince }} ago <br>
+                                        <span class="text-muted">
+                                        {{v.last_trade|date:"jS M | H:i" }}<strong>
+                                        </span>
+                                    </p>
+                                <br>
+                                    {% elif k == 'btc' %}
+                                    <p class="no-margin">
+                                       <strong> {{v.last_trade|timesince }} ago <br>
+                                        <span class="text-muted">
+                                        {{v.last_trade|date:"jS M | H:i" }}<strong>
+                                        </span>
+                                    </p>
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    </div>
+                    {% for exchange, tickers in ex_tickers.items %}
+                        <!-- EXCHANGE 1 TAB -->
+                        <div id="{{ exchange.name }}" class="tab-pane">
+                            <h5 class="tab-header"><i class="fa fa-comments"></i> Top Commenters</h5>
+                            <ul class="news-list">
+                                <li>
+                                    <img src="/static/assets/img/13.png" alt="" class="pull-left img-circle"/>
+                                    <div class="news-item-info">
+                                        <div class="name"><a href="#">Frans Garey</a></div>
+                                        <div class="comment">
+                                            Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit,
+                                            sed quia
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <img src="/static/assets/img/1.png" alt="" class="pull-left img-circle"/>
+                                    <div class="news-item-info">
+                                        <div class="name"><a href="#">Finees Lund</a></div>
+                                        <div class="comment">
+                                            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore
+                                            eu fugiat.
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <img src="/static/assets/img/14.png" alt="" class="pull-left img-circle"/>
+                                    <div class="news-item-info">
+                                        <div class="name"><a href="#">Jessica Johnsson</a></div>
+                                        <div class="comment">
+                                            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
+                                            deserunt.
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <img src="/static/assets/img/3.png" alt="" class="pull-left img-circle"/>
+                                    <div class="news-item-info">
+                                        <div class="name"><a href="#">Erebus Novak</a></div>
+                                        <div class="comment">
+                                            Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium
+                                            doloremque.
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <img src="/static/assets/img/2.png" alt="" class="pull-left img-circle"/>
+                                    <div class="news-item-info">
+                                        <div class="name"><a href="#">Leopoldo Reier</a></div>
+                                        <div class="comment">
+                                            Laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis
+                                            et quasi.
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+            <!-- MimbleWimble COINS STATS-->
+            <section class="widget">
+                <header>
+                    <h4>
+                        MimbleWimble
+                        <small>
+                            coins statistics
+                        </small>
+                    </h4>
+                    <div class="widget-controls">
+                        Last Update: {{filters.epic.gecko.updated|timesince }} ago ||
+                            {{filters.epic.gecko.updated|date:"jS M, H:i T"}}
+                        <a data-widgster="close" title="Close" href="#"><i class="glyphicon glyphicon-remove"></i></a>
+                    </div>
+                </header>
+                <div class="widget-table-overflow">
+                    <table id="mwcoins" class="table table-striped table-lg mt-sm mb-0 sources-table">
+                        <thead>
+                        <tr>
+                            <th>Coin</th>
+                            <th>Price</th>
+                            <th>Price Change 7d</th>
+                            <th class="chart-col-header hidden-xs">Trend</th>
+                            <th class="hidden-xs">Market Cap</th>
+                            <th>Volume 24h</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for k, v in mw_data.items %}
+                            {% if v.symbol == 'EPIC' %}
+                                <tr style="border-style: solid; border-width: 1px; border-color: gold; background-color: rgba(51, 51, 51, 0.3)">
+                            {% else %}
+                                <tr style="">
+                            {% endif %}
+                                    <td>
+                                        <img src="{{ v.img }}" class="rounded px-2" height="30px">
+                                        <span class="label label-important">{{v.symbol.upper}}</span> {{v.name}}</td>
+                                    <td><strong>${{v.price|floatformat:-3}}</strong></td>
+                                    <td><strong>{{v.change_7d|floatformat:-1}} %</strong></td>
+                                    <td class="chart-cell hidden-xs">
+                                        {{ v.chart.script|safe }}
+                                        {{ v.chart.div|safe }}
+                                    </td>
+                                    <td class="hidden-xs">${{v.market_cap|intcomma}}</td>
+                                    <td>${{v.volume|intcomma}}</td>
+                                </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+<!--        RIGHT SIDE PANELS-->
+<div class="col-lg-3">
+    <section class="widget">
+        <div class="body">
+            <div id="feed" class="feed">
+                <div class="wrapper">
+                    <section class="feed-item">
+                        <div class="icon pull-left">
+                            <i class="fa fa-refresh"></i>
+                        </div>
+                        <div class="feed-item-body">
+                            <div class="text">
+                                <p>In Circulation:
+                                    <img class="img px-1" src="{% static 'imgs/btn1.png' %}" alt="" height="17">
+                                <strong>{{filters.epic.explorer.circulating|intcomma}}</strong> out of
+                                    <strong>21 million</strong>
+                                </p>
+                                <p>
+                                    Worth:
+                                    <i class="fa fa-dollar color-green"></i>
+                                    <strong>
+                                        {{filters.epic.explorer.circulating|epic_to:'usdt'|floatformat:0|intcomma}}</strong>
+                                     ||
+                                    <i class="fa fa-bitcoin color-orange"></i>
+                                    <strong> {{filters.epic.explorer.circulating|epic_to:'btc'|floatformat:-2}}</strong>
+                                </p>
+                                <div class="" style="width: 38%;">
+                                    <div class="pull-right">
+                                        Total
+                                    </div>
+                                    <div class="info">Circulating</div>
+                                    <div class="progress progress-sm mt-xs js-progress-animate">
+                                        <div class="progress-bar progress-bar-striped progress-bar-success"
+                                             style="width: {{filters.epic.data.all.last.explorer.circulating|get_percent:21000000}}%;">
+                                            {{filters.epic.explorer.circulating|get_percent:'21000000'}}%
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="widget">
+        <div class="body">
+            <div id="feed" class="feed">
+                <div class="wrapper">
+                    <div class="vertical-line"></div>
+                    <section class="feed-item">
+                        <div class="icon pull-left">
+                            <i class="fa fa-gears"></i>
+                        </div>
+                        <div class="feed-item-body">
+                            <div class="text py-1">
+                                In last <strong>24 hours</strong>
+                                <img class="img px-1" src="{% static 'imgs/btn1.png' %}" alt="" height="17">
+                                    <strong>{{daily_mined|intcomma}}</strong>
+                                 coins were mined.
+                            </div>
+                            <div>
+                                Worth:
+                                <i class="fa fa-dollar color-green"></i>
+                                <strong>{{daily_mined|epic_to:'usdt'|floatformat:0|intcomma}}</strong>
+                                  ||
+                                <i class="fa fa-bitcoin color-orange"></i>
+                                <strong>{{daily_mined|epic_to:'btc'|floatformat:-2}}</strong>
+                                <br>
+                                <strong>
+                                    {{daily_mined|get_percent:filters.epic.explorer.circulating}}
+                                </strong>
+                                % of circulating.
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="widget">
+        <div class="body">
+            <div id="feed" class="feed">
+                <div class="wrapper">
+                    <div class="vertical-line"></div>
+                    <section class="feed-item">
+                        <div class="icon pull-left">
+                            <i class="fa fa-bar-chart-o"></i>
+                        </div>
+                        <div class="feed-item-body">
+                            <div class="text py-1">
+                                In last <strong>24 hours</strong>
+                                <img class="img px-1" src="{% static 'imgs/btn1.png' %}" alt="" height="17">
+                                <strong>{{volumes.total.all|floatformat:0|intcomma}}</strong>
+                                 coins were traded.
+                            </div>
+                            <div>
+                                Worth:
+                                <i class="fa fa-dollar color-green"></i>
+                                <strong>{{volumes.total.all|epic_to:'usdt'|floatformat:0|intcomma}}</strong>
+                                  ||
+                                <i class="fa fa-bitcoin color-orange"></i>
+                                <strong>{{volumes.total.all|epic_to:'btc'|floatformat:-2}}</strong>
+                                 <br>
+                                <strong>
+                                    {{volumes.total.all|get_percent:filters.epic.explorer.circulating}}
+                                    </strong>
+                                % of circulating.
+                            </div>
+                        </div>
+                    </div>
+                </section>
+<!-- 2ND RIGHT PANEL -->
+    <section class="widget">
+        <div class="body">
+            <div id="feed" class="feed">
+                <div class="wrapper">
+                <div class="vertical-line"></div>
+                <section class="feed-item">
+                    <div class="icon pull-left">
+                        <i class="fa fa-cube"></i>
+                    </div>
+                    <div class="feed-item-body">
+                        <div class="text py-1">
+                            <p>Block height:
+                                <strong>{{filters.epic.explorer.height|intcomma}}</strong> blocks.
+                            </p>
+                            <p>
+                                Last block mined: <strong>{{filters.epic.explorer.last_block|naturaltime}}</strong>.
+                            </p>
+                            <p>
+                                Block Subsidy Value: <i class="fa fa-dollar color-green"></i>
+                                <strong>{{filters.epic.explorer.block_value|floatformat:-2}}</strong>
+                            </p>
+                        </div>
+                    </div>
+                </section>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="widget">
+        <div class="body">
+            <div id="feed" class="feed">
+                <div class="wrapper">
+                <div class="vertical-line"></div>
+                <section class="feed-item">
+                    <div class="icon pull-left">
+                        <i class="fa fa-bullseye"></i>
+                    </div>
+                    <div class="feed-item-body">
+                        <div class="text py-1">
+                            <p>Current Target Difficulty:
+                            </p>
+                            <p>
+                                ProgPow: <strong>{{filters.epic.explorer.target_diff.progpow|intword}}</strong>
+                            </p>
+                            <p>
+                                RandomX: <strong>{{filters.epic.explorer.target_diff.randomx|intword}}</strong>
+                            </p>
+                            <p>
+                                Cuckoo: <strong>-</strong>
+                            </p>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+    <!-- page specific scripts -->
+    <!-- page libs -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bokeh/2.0.1/bokeh.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bokeh/2.0.1/bokeh-widgets.min.js"></script>
+    <script src="/static/assets/lib/slimScroll/jquery.slimscroll.min.js"></script>
+    <script src="/static/assets/lib/jquery.sparkline/index.js"></script>
+
+    <script src="/static/assets/lib/backbone/backbone.js"></script>
+    <script src="/static/assets/lib/backbone.localStorage/build/backbone.localStorage.min.js"></script>
+
+    <script src="/static/assets/lib/d3/d3.min.js"></script>
+    <script src="/static/assets/lib/nvd3/build/nv.d3.min.js"></script>
+
+    <!-- page application js -->
+    <script src="/static/assets/js/index.js"></script>
+    <script src="/static/assets/js/chat.js"></script>
+
+    <!-- page template -->
+    <script type="text/template" id="message-template">
+        <div class="sender pull-left">
+            <div class="icon">
+                <img src="/static/assets/img/2.png" class="img-circle" alt="">
+            </div>
+            <div class="time">
+                just now
+            </div>
+        </div>
+        <div class="chat-message-body">
+            <span class="arrow"></span>
+            <div class="sender"><a href="#">Tikhon Laninga</a></div>
+            <div class="text">
+                <%- text %>
+            </div>
+        </div>
+    </script>
+
+{% endblock javascripts %}
+<section class="widget large">
+                <header>
+                    <h4>
+                        Chat
+                    </h4>
+                    <div class="widget-controls">
+                        <a title="Options" href="#"><i class="glyphicon glyphicon-cog"></i></a>
+                        <a data-widgster="close" title="Close" href="#"><i class="glyphicon glyphicon-remove"></i></a>
+                    </div>
+                </header>
+                <div class="body">
+                    <div id="chat" class="chat">
+                        <div id="chat-messages" class="chat-messages">
+                            <div class="chat-message">
+                                <div class="sender pull-left">
+                                    <div class="icon">
+                                        <img src="/static/assets/img/2.png" class="img-circle" alt="">
+                                    </div>
+                                    <div class="time">
+                                        4 min
+                                    </div>
+                                </div>
+                                <div class="chat-message-body">
+                                    <span class="arrow"></span>
+                                    <div class="sender"><a href="#">Tikhon Laninga</a></div>
+                                    <div class="text">
+                                        Hey Sam, how is it going? But I must explain to you how all this mistaken
+                                        idea of denouncing of a pleasure and praising pain was born
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="chat-message">
+                                <div class="sender pull-right">
+                                    <div class="icon">
+                                        <img src="/static/assets/img/1.png" class="img-circle" alt="">
+                                    </div>
+                                    <div class="time">
+                                        3 min
+                                    </div>
+                                </div>
+                                <div class="chat-message-body on-left">
+                                    <span class="arrow"></span>
+                                    <div class="sender"><a href="#">Cenhelm Houston</a></div>
+                                    <div class="text">
+                                        Pretty good. Doing my homework..  No one rejects, dislikes, or avoids
+                                        pleasure itself, because it is pleasure, but because
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="chat-message">
+                                <div class="sender pull-left">
+                                    <div class="icon">
+                                        <img src="/static/assets/img/2.png" class="img-circle" alt="">
+                                    </div>
+                                    <div class="time">
+                                        2 min
+                                    </div>
+                                </div>
+                                <div class="chat-message-body">
+                                    <span class="arrow"></span>
+                                    <div class="sender"><a href="#">Tikhon Laninga</a></div>
+                                    <div class="text">
+                                        Any chance to go out? To take a trivial example, which of us ever undertakes
+                                        laborious physical exercise, except to obtain some advantage
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="chat-message">
+                                <div class="sender pull-right">
+                                    <div class="icon">
+                                        <img src="/static/assets/img/1.png" class="img-circle" alt="">
+                                    </div>
+                                    <div class="time">
+                                        2 min
+                                    </div>
+                                </div>
+                                <div class="chat-message-body on-left">
+                                    <span class="arrow"></span>
+                                    <div class="sender"><a href="#">Cenhelm Houston</a></div>
+                                    <div class="text">
+                                        .. Maybe 40-50 mins. I don't know exactly. On the other hand, we denounce
+                                        with righteous indignation and dislike men who are so beguiled
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="chat-message">
+                                <div class="sender pull-left">
+                                    <div class="icon">
+                                        <img src="/static/assets/img/2.png" class="img-circle" alt="">
+                                    </div>
+                                    <div class="time">
+                                        1 min
+                                    </div>
+                                </div>
+                                <div class="chat-message-body">
+                                    <span class="arrow"></span>
+                                    <div class="sender"><a href="#">Tikhon Laninga</a></div>
+                                    <div class="text">
+                                        Anyway sounds great! These cases are perfectly simple and easy to
+                                        distinguish.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <footer class="chat-footer row">
+                            <div class="col-xs-9">
+                                <input id="new-message" type="text" class="form-control input-transparent" placeholder="Enter your message..">
+                            </div>
+                            <div class="col-xs-3">
+                                <button type="button" id="new-message-btn" class="btn btn-transparent btn-block">Send</button>
+                            </div>
+                        </footer>
+                    </div>
+                </div>
+            </section>
