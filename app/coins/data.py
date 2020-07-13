@@ -110,8 +110,8 @@ def models():
 filterss = {
     'epic': {
         'coin': models()['epic'],
-        'gecko': models()['epic'].coingecko.latest('updated'),
-        'explorer': models()['epic'].explorer.latest('updated'),
+        'gecko': models()['epic'].coingecko.order_by('updated').last(),
+        'explorer': models()['epic'].explorer.order_by('updated').last(),
         'data': {
             'all': models()['epic'].data.all(),
             'usdt': Data.objects.filter(coin=models()['epic'], pair='usdt').order_by('updated').last(),
@@ -223,18 +223,18 @@ def coingecko_data():
                         }}
                 }}
 
-        last_saved = CoinGecko.objects.filter(coin=coin, to_save=True).last()
+        # last_saved = CoinGecko.objects.filter(coin=coin, to_save=True).last()
         last_updated = CoinGecko.objects.filter(coin=coin, to_save=False).last()
-        save = check_saving(last_saved)
-
-        if save:
-            CoinGecko.objects.create(to_save=save, **data)
-            print(f"save=True, record saved")
+        # save = check_saving(last_saved)
+        #
+        # if save:
+        #     CoinGecko.objects.create(to_save=save, **data)
+        #     print(f"save=True, record saved")
+        # else:
+        if last_updated:
+            updater(last_updated, data)
         else:
-            if last_updated:
-                updater(last_updated, data)
-            else:
-                CoinGecko.objects.create(to_save=save, **data)
+            CoinGecko.objects.create(**data)
 
     end_time = monotonic()
     return f"CoinGecko data saved in db {timedelta(seconds=(end_time - start_time)).total_seconds()} seconds"
@@ -293,19 +293,17 @@ def citex_data():
                 }
             sleep(1.5)
 
-            last_saved = Ticker.objects.filter(coin=coin, pair=target, exchange=exchange,
-                                               to_save=True).last()
-            last_updated = Ticker.objects.filter(coin=coin, pair=target, exchange=exchange,
-                                                 to_save=False).last()
-            save = check_saving(last_saved)
-            if save:
-                Ticker.objects.create(to_save=save, **update)
-                print(f"save=True, record saved")
+            # last_saved = Ticker.objects.filter(coin=coin, pair=target, exchange=exchange, to_save=True).last()
+            last_updated = Ticker.objects.filter(coin=coin, pair=target, exchange=exchange).last()
+            # save = check_saving(last_saved)
+            # if save:
+            #   Ticker.objects.create(to_save=save, **update)
+            #   print(f"save=True, record saved")
+            # else:
+            if last_updated:
+                updater(last_updated, update)
             else:
-                if last_updated:
-                    updater(last_updated, update)
-                else:
-                    Ticker.objects.create(to_save=save, **update)
+                Ticker.objects.create(**update)
 
     end_time = monotonic()
     return f"Citex Data saved in db {timedelta(seconds=(end_time - start_time)).total_seconds()} seconds"
@@ -358,17 +356,17 @@ def vitex_data():
         'trades': data['trades']['data']
         }
 
-    last_saved = Ticker.objects.filter(coin=coin, pair=target, exchange=exchange, to_save=True).last()
-    last_updated = Ticker.objects.filter(coin=coin, pair=target, exchange=exchange, to_save=False).last()
-    save = check_saving(last_saved)
-    if save:
-        Ticker.objects.create(to_save=save, **update)
-        print(f"save=True, record saved")
+    # last_saved = Ticker.objects.filter(coin=coin, pair=target, exchange=exchange, to_save=True).last()
+    last_updated = Ticker.objects.filter(coin=coin, pair=target, exchange=exchange).last()
+    # save = check_saving(last_saved)
+    # if save:
+    #     Ticker.objects.create(to_save=save, **update)
+    #     print(f"save=True, record saved")
+    # else:
+    if last_updated:
+        updater(last_updated, update)
     else:
-        if last_updated:
-            updater(last_updated, update)
-        else:
-            Ticker.objects.create(to_save=save, **update)
+        Ticker.objects.create(**update)
 
     end_time = monotonic()
     return f"ViteX Data saved in db {timedelta(seconds=(end_time - start_time)).total_seconds()} seconds"
@@ -394,17 +392,17 @@ def pool_data():
             'blocks': api(parts[pool]['url'], parts[pool]['params'][0])[0:50]
             }
 
-        last_saved = Pool.objects.filter(name=pool, coin=models()['epic'], to_save=True).last()
-        last_updated = Pool.objects.filter(name=pool, coin=models()['epic'], to_save=False).last()
-        save = check_saving(last_saved)
-        if save:
-            Pool.objects.create(to_save=save, **data)
-            print(f"save=True, record saved")
+        # last_saved = Pool.objects.filter(name=pool, coin=models()['epic'], to_save=True).last()
+        last_updated = Pool.objects.filter(name=pool, coin=models()['epic']).last()
+        # save = check_saving(last_saved)
+        # if save:
+        #     Pool.objects.create(to_save=save, **data)
+        #     print(f"save=True, record saved")
+        # else:
+        if last_updated:
+            updater(last_updated, data)
         else:
-            if last_updated:
-                updater(last_updated, data)
-            else:
-                Pool.objects.create(to_save=save, **data)
+            Pool.objects.create(**data)
 
     end_time = monotonic()
     return f"Pool data saved to db! {timedelta(seconds=(end_time - start_time)).total_seconds()} seconds"
@@ -412,6 +410,17 @@ def pool_data():
 
 def explorer_data():
     start_time = monotonic()
+
+    def get_diff(algo, node, coin=models()['epic']):
+        blocks = [block for block in models()[node].blocks]
+        for block in blocks:
+            # 'progpow'][0]['diff']:
+            if algo == block['algo']:
+                return block['diff'][algo], block['height']
+            else:
+                block = Explorer.objects.filter(coin=coin).order_by('updated').last()
+                return block.target_diff[algo], block.height
+
     parts = {
         'ex_url': 'https://explorer.epic.tech/api?q=',
         'ex_params': [
@@ -433,9 +442,9 @@ def explorer_data():
         'reward': api(parts['ex_url'], parts['ex_params'][5]),
         'average_blocktime': api(parts['ex_url'], parts['ex_params'][6]),
         'target_diff': {
-            'progpow': [block for block in models()['icemining'].blocks if block['algo'] == 'progpow'][0]['diff'],
-            'randomx': [block for block in models()['icemining'].blocks if block['algo'] == 'randomx'][0]['diff'],
-            # 'cuckoo': [block for block in models()['icemining'].blocks if block['algo'] == 'cuckoo'][0]['diff']
+            'progpow': get_diff(algo='progpow', node='icemining'),
+            'randomx': get_diff(algo='randomx', node='icemining'),
+            # 'cuckoo': get_diff(algo='cuckoo', node='icemining')
             },
         'total_diff': {
             'progpow': api(parts['ex_url'], parts['ex_params'][3]),
@@ -444,17 +453,17 @@ def explorer_data():
             }
         }
 
-    last_saved = Explorer.objects.filter(coin=models()['epic'], to_save=True).last()
-    last_updated = Explorer.objects.filter(coin=models()['epic'], to_save=False).last()
-    save = check_saving(last_saved)
-    if save:
-        Explorer.objects.create(to_save=save, **data)
-        print(f"save=True, record saved")
+    # last_saved = Explorer.objects.filter(coin=models()['epic'], to_save=True).last()
+    last_updated = Explorer.objects.filter(coin=models()['epic']).last()
+    # save = check_saving(last_saved)
+    # if save:
+    #     Explorer.objects.create(to_save=save, **data)
+    #     print(f"save=True, record saved")
+    # else:
+    if last_updated:
+        updater(last_updated, data)
     else:
-        if last_updated:
-            updater(last_updated, data)
-        else:
-            Explorer.objects.create(to_save=save, **data)
+        Explorer.objects.create(**data)
 
     end_time = monotonic()
     return f"Explorer data saved to db! {timedelta(seconds=(end_time - start_time)).total_seconds()} seconds"
