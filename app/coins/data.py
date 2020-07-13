@@ -416,10 +416,9 @@ def explorer_data():
         for block in blocks:
             # 'progpow'][0]['diff']:
             if algo == block['algo']:
-                return block['diff'][algo], block['height']
+                return block['diff'], block['height']
             else:
-                block = Explorer.objects.filter(coin=coin).order_by('updated').last()
-                return block.target_diff[algo], block.height
+                return 1
 
     parts = {
         'ex_url': 'https://explorer.epic.tech/api?q=',

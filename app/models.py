@@ -194,3 +194,6 @@ def btc_to_usd(value):
     Convert amount (value) of BTC to USD.
     """
     return d(value) * d(Coin.objects.get(symbol="BTC").coingecko.latest('updated').data['price'])
+
+
+all_models = [Currency, Data, Pool, Explorer, Ticker, CoinGecko, Chart]

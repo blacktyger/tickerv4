@@ -39,7 +39,14 @@ def index(request):
         target: ex.ticker.filter(pair=target).order_by('updated').last() for target in pairs
         if ex.ticker.filter(pair=target)} for ex in all_exchanges()}
 
+    def update_data():
+        data = {}
+        for model in all_models:
+            data[str(model).split('.')[2][:-2]] = model.objects.order_by('updated').last().updated
+        return data
+
     context = {
+        'update_data': update_data(),
         'coins_list': Coin.objects.all(),
         'currency': Currency.objects.all(),
         'halving': halving(models()['epic']),

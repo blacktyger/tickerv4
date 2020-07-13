@@ -3,7 +3,7 @@ from django.urls import path, include  # add this
 from rest_framework import routers, serializers, viewsets
 
 from app import views
-from app.tasks import clear_db_task, up_data1, up_data2, up_exchanges
+from app.tasks import clear_db_task, up_data1, up_data2, up_exchanges, update_all
 
 router = routers.DefaultRouter()
 router.register(r'data', views.DataViewSet)
@@ -15,10 +15,10 @@ urlpatterns = [
     path('api/', include(router.urls)),
     ]
 
-TASKS = {'up_data1': up_data1, 'up_exchanges': up_exchanges, 'up_data2': up_data2}
+# TASKS = {'up_data1': up_data1, 'up_exchanges': up_exchanges, 'up_data2': up_data2}
 
-for name, task in TASKS.items():
-    clear_db_task(name)
-    task(repeat=300, verbose_name=name)
+# for name, task in TASKS.items():
+clear_db_task(update_all())
+update_all(repeat=300, verbose_name='update_all')
 
 
