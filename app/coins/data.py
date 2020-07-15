@@ -44,7 +44,6 @@ COINS = {
         ('beam', 'BEAM'),
         ('mimblewimblecoin', 'MWC'),
         ('grimm', 'XGM'),
-        ('bitgrin', 'XBG'),
         ],
     'other': [
         ('bitcoin', 'BTC'),
@@ -168,7 +167,7 @@ def currency_data():
         return {x: y for x, y in rates['conversion_rates'].items()}
 
     for key, value in CURRS.items():
-        last_update = Currency.objects.filter(symbol=value).last()
+        last_update = Currency.objects.filter(symbol=value).order_by('updated').last()
         if not last_update or (timezone.now() - last_update.updated).total_seconds() > 60 * 60 * 6:
             source = get_rates()
             for currency, price in source.items():
@@ -224,7 +223,7 @@ def coingecko_data():
                 }}
 
         # last_saved = CoinGecko.objects.filter(coin=coin, to_save=True).last()
-        last_updated = CoinGecko.objects.filter(coin=coin, to_save=False).last()
+        last_updated = CoinGecko.objects.filter(coin=coin).order_by('updated').last()
         # save = check_saving(last_saved)
         #
         # if save:
@@ -294,7 +293,7 @@ def citex_data():
             sleep(1.5)
 
             # last_saved = Ticker.objects.filter(coin=coin, pair=target, exchange=exchange, to_save=True).last()
-            last_updated = Ticker.objects.filter(coin=coin, pair=target, exchange=exchange).last()
+            last_updated = Ticker.objects.filter(coin=coin, pair=target, exchange=exchange).order_by('updated').last()
             # save = check_saving(last_saved)
             # if save:
             #   Ticker.objects.create(to_save=save, **update)
@@ -357,7 +356,7 @@ def vitex_data():
         }
 
     # last_saved = Ticker.objects.filter(coin=coin, pair=target, exchange=exchange, to_save=True).last()
-    last_updated = Ticker.objects.filter(coin=coin, pair=target, exchange=exchange).last()
+    last_updated = Ticker.objects.filter(coin=coin, pair=target, exchange=exchange).order_by('updated').last()
     # save = check_saving(last_saved)
     # if save:
     #     Ticker.objects.create(to_save=save, **update)
@@ -374,6 +373,8 @@ def vitex_data():
 
 def pool_data():
     start_time = monotonic()
+
+    coin = models()['epic']
     parts = {
         'icemining': {
             'url': 'https://icemining.ca/api/',
@@ -387,13 +388,13 @@ def pool_data():
     for pool in POOLS[:1]:
         data = {
             'name': pool,
-            'coin': models()['epic'],
+            'coin': coin,
             'updated': timezone.now(),
             'blocks': api(parts[pool]['url'], parts[pool]['params'][0])[0:50]
             }
 
         # last_saved = Pool.objects.filter(name=pool, coin=models()['epic'], to_save=True).last()
-        last_updated = Pool.objects.filter(name=pool, coin=models()['epic']).last()
+        last_updated = Pool.objects.filter(name=pool, coin=coin).order_by('updated').last()
         # save = check_saving(last_saved)
         # if save:
         #     Pool.objects.create(to_save=save, **data)
@@ -411,14 +412,14 @@ def pool_data():
 def explorer_data():
     start_time = monotonic()
 
-    def get_diff(algo, node, coin=models()['epic']):
-        blocks = [block for block in models()[node].blocks]
-        for block in blocks:
-            # 'progpow'][0]['diff']:
-            if algo == block['algo']:
-                return block['diff'], block['height']
-            else:
-                return 1
+    coin = models()['epic']
+
+    def get_diff(algo, node='icemining', coin=coin):
+        blocks = [block for block in models()[node].blocks if block['algo'] == algo]
+        if blocks:
+            return blocks[0]['diff'], blocks[0]['height']
+        else:
+            return 1
 
     parts = {
         'ex_url': 'https://explorer.epic.tech/api?q=',
@@ -432,7 +433,7 @@ def explorer_data():
         }
 
     data = {
-        'coin': models()['epic'],
+        'coin': coin,
         'updated': timezone.now(),
         'last_block': t_s(api(parts['ex_url'], parts['ex_params'][7]
                               + str(api(parts['ex_url'], parts['ex_params'][1])))),
@@ -453,7 +454,7 @@ def explorer_data():
         }
 
     # last_saved = Explorer.objects.filter(coin=models()['epic'], to_save=True).last()
-    last_updated = Explorer.objects.filter(coin=models()['epic']).last()
+    last_updated = Explorer.objects.filter(coin=coin).order_by('updated').last()
     # save = check_saving(last_saved)
     # if save:
     #     Explorer.objects.create(to_save=save, **data)
@@ -514,12 +515,11 @@ def epic_data():
             'ath': d(get_gecko(models()['epic']).data['ath'][target]['price']),
             'ath_date': get_gecko(models()['epic']).data['ath'][target]['date'],
             'ath_change': d(get_gecko(models()['epic']).data['ath'][target]['change'], 2),
-            'block_value': d(filterss['epic']['explorer'].reward) *
-                           d(avg_price(target)),
+            'block_value': d(filterss['epic']['explorer'].reward) * d(avg_price(target)),
             }
 
         # last_saved = History.objects.filter(coin=models()['epic'], pair=target, to_save=True).last()
-        last_updated = Data.objects.filter(coin=models()['epic'], pair=target).last()
+        last_updated = Data.objects.filter(coin=coin, pair=target).order_by('updated').last()
         # save = check_saving(last_saved)
         # if save:
         #     Data.objects.create(to_save=save, **data)
