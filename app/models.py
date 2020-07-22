@@ -1,9 +1,9 @@
 from django.db import models
-from django.utils import timezone
 from django_extensions.db.fields.json import JSONField
 from django.utils import timezone
 from .globals import pairs
 from .tools import *
+from .managers import *
 
 register = template.Library()
 
@@ -52,6 +52,9 @@ class Coin(models.Model):
     mw_coin = models.BooleanField(default=True, null=True)
     to_save = models.BooleanField(default=False)
 
+    objects = models.Manager()
+    get = DataQuerySet.as_manager()
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.pairs = pairs
@@ -78,6 +81,9 @@ class Data(models.Model):
     block_value = models.CharField(max_length=124, default='0')
     to_save = models.BooleanField(default=False)
 
+    objects = models.Manager()
+    get = DataQuerySet.as_manager()
+
     def market_cap_change_24h(self):
         return change(Data.objects.filter(coin=self.coin, pair=self.pair), 'market_cap')
 
@@ -86,22 +92,17 @@ class Data(models.Model):
 
 
 class History(models.Model):
-    coin = models.ForeignKey(Coin, on_delete=models.CASCADE, related_name='history')
-    pair = models.CharField(choices=PAIRS, default=PAIRS[0], max_length=100)
-
+    pair = models.CharField(max_length=100, default=PAIRS[0])
+    coin = models.CharField(max_length=124, default='EPIC')
     updated = models.DateTimeField(default=timezone.now)
     avg_price = models.CharField(max_length=124, default='0')
     vol_24h = models.CharField(max_length=124, default='0')
-    percentage_change_24h = models.CharField(max_length=124, default='0')
-    percentage_change_7d = models.CharField(max_length=124, default='0')
     market_cap = models.CharField(max_length=124, default='0')
-    ath = models.CharField(max_length=124, default='0')
-    ath_date = models.DateTimeField(default=timezone.now)
-    ath_change = models.CharField(max_length=124, default='0')
     explorer = JSONField(default={})
-    last_block = models.DateTimeField(default=timezone.now)
     block_value = models.CharField(max_length=124, default='0')
-    to_save = models.BooleanField(default=False)
+
+    objects = models.Manager()
+    get = TickerQuerySet.as_manager()
 
     def __str__(self):
         return f"History: {self.coin} from {self.updated}"
@@ -130,6 +131,9 @@ class Explorer(models.Model):
     total_diff = JSONField(default={})
     to_save = models.BooleanField(default=False)
 
+    objects = models.Manager()
+    get = TickerQuerySet.as_manager()
+
 
 class Ticker(models.Model):
     exchange = models.ForeignKey(Exchange, on_delete=models.CASCADE, related_name='ticker')
@@ -151,6 +155,9 @@ class Ticker(models.Model):
     candles = JSONField(default={})
     to_save = models.BooleanField(default=False)
 
+    objects = models.Manager()
+    get = TickerQuerySet.as_manager()
+
 
 def get_ticker(coin, exchange, last=False):
     if last:
@@ -166,6 +173,9 @@ class CoinGecko(models.Model):
     data = JSONField(default={})
     to_save = models.BooleanField(default=False)
 
+    objects = models.Manager()
+    get = DataQuerySet.as_manager()
+
 
 def get_gecko(coin):
     return CoinGecko.objects.filter(coin=coin).latest('updated')
@@ -178,6 +188,9 @@ class Chart(models.Model):
     div = models.TextField(default='-')
     script = models.TextField(default='-')
     to_save = models.BooleanField(default=False)
+
+    objects = models.Manager()
+    get = DataQuerySet.as_manager()
 
 
 @register.filter()
@@ -197,3 +210,13 @@ def btc_to_usd(value):
 
 
 all_models = [Currency, Data, Pool, Explorer, Ticker, CoinGecko, Chart]
+
+
+def update_data():
+    data = {}
+    for model in all_models:
+        try:
+            data[str(model).split('.')[2][:-2]] = model.objects.order_by('updated').last().updated
+            return data
+        except:
+            pass

@@ -88,15 +88,17 @@
                                     <i class="fa fa-dollar dollar-color"></i>
                                     {{coin.coingecko.last.data.price|floatformat:-1|intcomma}}
                                     {{coin.coingecko.last.data.change_24h|check_arrow|safe}}
+
                                 </span>
                             </span>
                         {% endfor %}
                         </div>
                         <div class="col-lg-5 my-2 text-center">
                             <span class="num-xs-white">
-                                Last update: {{filters.epic.data.last.0.updated|timesince }} ago
+                                Last update: {{last_update|timesince }} ago
                                 <span class="label mx-2 px-2 py-1" style="border-radius: 25px; background-color: rgb(56, 56, 56, 0.4);">
-                                    {{filters.epic.data.last.0.updated|date:"jS M, H:i T"}}
+                                    {{last_update|date:"jS M, H:i T"}}
+
                                 </span>
                             </span>
                         </div>

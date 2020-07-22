@@ -6,7 +6,7 @@ from bokeh.plotting import figure
 from bokeh.models.ranges import Range1d
 from django.utils import timezone
 
-from app.coins.data import models, filterss, volumes, all_exchanges
+from app.coins.data import models, filterss, volumes
 from app.globals import pairs
 from app.tools import t_s, d, spread, avg, fields, updater
 from app.models import Coin, Exchange, Data, Ticker, CoinGecko, Chart, get_gecko
@@ -189,7 +189,7 @@ def mw_charts(save=False):
 
 
 def ex_vol_chart():
-    for exchange in all_exchanges():
+    for exchange in Exchange.objects.all():
         for target in pairs:
             data = filterss()['exchanges'][exchange.name.lower()]['tickers'][target].last().candles['c7x1440']
             time = [time for time, value in data]

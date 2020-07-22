@@ -2,6 +2,7 @@ import json
 from time import sleep, monotonic
 from datetime import timedelta
 import requests
+from django.forms import model_to_dict
 from django.utils import timezone
 from pycoingecko import CoinGeckoAPI
 import copy
@@ -13,14 +14,14 @@ from app.tools import t_s, d, spread, avg, fields, updater, \
 from app.models import Coin, Exchange, Data, Ticker, CoinGecko, \
     Chart, Explorer, Pool, Link, Currency, History
 from app.models import get_gecko, get_ticker, btc_to_usd, usd_to_btc
-from tickerv4.keys import exchange_api_key
+from tickerv4.keys import exchange_api_key, uniswap_key
 
 API_KEY = exchange_api_key
 
 PAIRS = pairs
 cg = CoinGeckoAPI()
 
-EXCHANGES = ['CITEX', 'ViteX']
+EXCHANGES = ['CITEX', 'ViteX', 'Uniswap']
 
 POOLS = ['icemining', '51pool']
 
@@ -90,10 +91,6 @@ def pools():
     for pool in POOLS:
         Pool.objects.get_or_create(name=pool, coin=models()['epic'])
     return f"{len(Pool.objects.all())} pools saved to models"
-
-
-def all_exchanges():
-    return Exchange.objects.all()
 
 
 def models():
@@ -193,7 +190,7 @@ def currency_data():
 def coingecko_data():
     start_time = monotonic()
     for coin in Coin.objects.all():
-        print(f"{coin}...")
+        # print(f"{coin}...")
         source = copy.deepcopy(cg.get_coin_by_id(coin.name))
         data = {
             'updated': timezone.now(),
@@ -253,7 +250,7 @@ def citex_data():
         url = start_url + query + symbol + size + typ
         if breaks:
             sleep(1.4)
-        print(f"{url}...")
+        # print(f"{url}...")
         return json.loads(requests.get(url).content)
 
     data = {target: {} for target in PAIRS}
@@ -369,6 +366,63 @@ def vitex_data():
 
     end_time = monotonic()
     return f"ViteX Data saved in db {timedelta(seconds=(end_time - start_time)).total_seconds()} seconds"
+
+
+def uniswap_data():
+    """
+    1. get transactions list for 'getAddressHistory/' - each transaction
+    have 2 records (epic > eth, eth > epic)
+    2. get tx id and paste to 'getTxInfo/'
+    3. if eth > epic transaction:
+
+         ['operations']['0']['usdPrice'] * ['operations']['0']['intvalue']
+         eth_price * eth_amount = tx_value (in usd)
+
+         ['operations']['1']['intvalue'] = epic_amount
+         tx_value / epic_amount = epic_price (in usd)
+
+       if epic > eth transaction:
+    """
+    start_time = monotonic()
+
+    queries = {
+        'address': 'getAddressInfo/',
+        'tx': 'getTxInfo',
+        }
+    address = '0xc27908ed2f80dd8a799625114730f9f10cf89d94'
+    target = 'eth'
+    exchange = Exchange.objects.get(name='Uniswap')
+    coin = Coin.objects.get(symbol="EPIC")
+
+    def uniswap_api(query, breaks=False):
+        key = '?apiKey=' + uniswap_key
+        url = "https://api.ethplorer.io/" + query + address + key
+        # print(url)
+        return json.loads(requests.get(url).content)
+
+    data = uniswap_api(query=queries['info'])
+    update = {
+        'updated': timezone.now(),
+        'coin': coin,
+        'exchange': exchange,
+        'pair': target,
+        'trading_url': 'https://uniswap.info/pair/0xc27908ed2f80dd8a799625114730f9f10cf89d94',
+        'last_price': d(data['market']['data']['lastPrice']),
+        'bid': d(data['market']['data']['bidPrice']),
+        'ask': d(data['market']['data']['askPrice']),
+        'spread': spread(data['market']['data']['askPrice'], data['market']['data']['bidPrice']),
+        'high': d(data['market']['data']['highPrice']),
+        'low': d(data['market']['data']['lowPrice']),
+        'last_trade': t_s(data['trades']['data'][0]['timestamp']),
+        'volume': d(data['market']['data']['volume']),
+        'orders': data['depth']['data'],
+        'candles': data['candles']['data'],
+        'trades': data['trades']['data']
+        }
+
+    end_time = monotonic()
+    return f"ViteX Data saved in db {timedelta(seconds=(end_time - start_time)).total_seconds()} seconds"
+    # return uniswap_api(query=queries['info'])
 
 
 def pool_data():
@@ -518,27 +572,49 @@ def epic_data():
             'block_value': d(filterss['epic']['explorer'].reward) * d(avg_price(target)),
             }
 
+        Data.objects.create(**data)
+        records = Data.objects.filter(coin=coin, pair=target)
+        if records.count() > 1:
+            records.order_by('updated')[0].delete()
+
+
         # last_saved = History.objects.filter(coin=models()['epic'], pair=target, to_save=True).last()
-        last_updated = Data.objects.filter(coin=coin, pair=target).order_by('updated').last()
+        # last_updated = Data.objects.filter(coin=coin, pair=target).order_by('updated').last()
         # save = check_saving(last_saved)
         # if save:
         #     Data.objects.create(to_save=save, **data)
         #     print(f"save=True, record saved")
         # else:
-        if last_updated:
-            updater(last_updated, data)
-        else:
-            Data.objects.create(**data)
+        # if last_updated:
+        #     updater(last_updated, data)
+        # else:
 
     end_time = monotonic()
     return f"Epic-Cash Data saved in db {timedelta(seconds=(end_time - start_time)).total_seconds()} seconds"
 
 
+def history_data():
+    coin = models()['epic']
+
+    for target in PAIRS:
+        all_data = model_to_dict(Data.get.by_pair(target).by_coin(coin).latest())
+        data = {}
+        for field in fields(History):
+            for key, value in all_data.items():
+                if key == field:
+                    data[field] = value
+
+        data['explorer'] = model_to_dict(Explorer.get.by_coin(coin).latest())
+
+        History.objects.create(**data)
+
+
+# ** make it more universal for more exchanges/pairs **
 def volumes():
     vols = {
-        'citex_btc': d(filterss['exchanges']['citex']['tickers']['btc'].order_by('updated').last().volume),
-        'vitex_btc': d(filterss['exchanges']['vitex']['tickers']['btc'].order_by('updated').last().volume),
-        'citex_usdt': d(filterss['exchanges']['citex']['tickers']['usdt'].order_by('updated').last().volume)
+        'citex_btc': d(Ticker.get.by_ex('CITEX').by_pair('btc').latest().volume),
+        'vitex_btc': d(Ticker.get.by_ex('ViteX').by_pair('btc').latest().volume),
+        'citex_usdt': d(Ticker.get.by_ex('CITEX').by_pair('usdt').latest().volume),
         }
 
     total = vols['citex_btc'] + vols['citex_usdt'] + vols['vitex_btc']

@@ -1,0 +1,185 @@
+{% block content %}
+<head>
+    <title>Work travel calculator</title>
+</head>
+    <div class="container mt-5">
+        <div class="row d-flex justify-content-center">
+            <div class="col-lg-8 col-md-12 col-sm-12 col-xs-12">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="input-group my-3 ">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">£ for L</span>
+                            </div>
+                            {{ job_form.price }}
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">L / 100KM</span>
+                            </div>
+                            {{ job_form.amount }}
+                        </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" >From</span>
+                        </div>
+                        {{ job_form.origin }}
+
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" >Destination</span>
+                        </div>
+                        {{ job_form.destination }}
+                    </div>
+                    <button type="submit"
+                        class="btn btn-primary btn-lg btn-block">Calculate</button>
+                    {% if message %}
+                    <div class="alert {{ message_class }} mt-1 text-center">{{ message }}</div>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="container mt-5">
+        <di v class="row d-flex justify-content-center">
+            <div class="col-lg-8 col-md-12 col-sm-12 col-xs-12">
+                {% if last_job %}
+                <div class="card bg-light border-dark mb-5 shadow-lg">
+                    <div class="card-header">
+                        <span class="subtitle"><span class="badge badge-info ">From: {{ last_job.origin }}</span>
+                        (<a target="_blank" href="{{last_job.origin_link}}">{{last_job.origin_full }}</a>)
+                        <br>
+                        <span class="subtitle"><span class="badge badge-info ">To: {{ last_job.destination }}</span>
+                        (<a target="_blank" href="{{last_job.dest_link}}">{{last_job.destination_full }}</a>)
+                    </div>
+                    <div class="card-body">
+                        <table class="table w-100 text-center table-striped table-borderless">
+                            <thead>
+                                <td></td>
+                                <td>One Way</td>
+                                <td>Total </td>
+                            </thead>
+                            <tr>
+                                <td>Travel Time</td>
+                                <td>
+                                    <h5><span class="badge badge-secondary ">{{ last_job.time }}h</span></h5>
+                                </td>
+                                <td>
+                                    <h5><span class="badge badge-primary ">{{ last_job.time2 }}h</span></h5>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Distance in miles</td>
+                                <td>
+                                    <h5><span class="badge badge-secondary ">{{ last_job.distance }}</span></h5>
+                                </td>
+                                <td>
+                                    <h5><span class="badge badge-primary ">{{ last_job.distance2 }}</span></h5>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Cost</td>
+                                <td>
+                                    <h5><span class="badge badge-secondary ">£{{ last_job.cost }}</span></h5>
+                                </td>
+                                <td>
+                                    <h5><span class="badge badge-primary ">£{{ last_job.cost2 }}</span></h5>
+                                </td>
+                            </tr>
+                        </table>
+                        <br>
+                        <hr>
+                        <div class="text-center">
+                            <span class="badge badge-info ">Fuel price: £{{last_job.price}}</span>
+                            <span class="badge badge-info ">Consumption:
+                                {{last_job.amount}}L/100km</span>
+                            <span class="badge badge-info">Leaving at: {{ last_job.date }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <hr>
+                 {% for travel in travels reversed %}
+                <div class="card bg-light border-dark mb-5 shadow-lg">
+                    <div class="card-header">
+                        <span class="subtitle"><span class="badge badge-info ">From: {{ travel.origin }}</span>
+                        (<a target="_blank" href="{{last_job.origin_link}}">{{travel.origin_full }}</a>)
+                        <br>
+                        <span class="subtitle"><span class="badge badge-info ">To: {{ travel.destination }}</span>
+                        (<a target="_blank" href="{{last_job.dest_link}}">{{travel.destination_full }}</a>)
+                    </div>
+                    <div class="card-body">
+                        <table class="table w-100 text-center table-striped table-borderless">
+                            <thead>
+                                <td></td>
+                                <td>One Way</td>
+                                <td>Total </td>
+                            </thead>
+                            <tr>
+                                <td>Travel Time</td>
+                                <td>
+                                    <h5><span class="badge badge-secondary ">{{ travel.time }}h</span></h5>
+                                </td>
+                                <td>
+                                    <h5><span class="badge badge-primary ">{{ travel.time2 }}h</span></h5>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Distance in miles</td>
+                                <td>
+                                    <h5><span class="badge badge-secondary ">{{ travel.distance }}</span></h5>
+                                </td>
+                                <td>
+                                    <h5><span class="badge badge-primary ">{{ travel.distance2 }}</span></h5>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Cost</td>
+                                <td>
+                                    <h5><span class="badge badge-secondary ">£{{ travel.cost }}</span></h5>
+                                </td>
+                                <td>
+                                    <h5><span class="badge badge-primary ">£{{ travel.cost2 }}</span></h5>
+                                </td>
+                            </tr>
+                        </table>
+                        <br>
+                        <hr>
+                        <div class="text-center">
+                            <span class="badge badge-info ">Fuel price: £{{travel.price}}</span>
+                            <span class="badge badge-info ">Consumption:
+                                {{travel.amount}}L/100km</span>
+                            <span class="badge badge-info">Leaving at: {{ travel.date }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+    </div>
+    </div>
+{% endblock content %}
+
+
+
+<!doctype html>
+<html lang="en">
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>

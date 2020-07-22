@@ -3,7 +3,7 @@ from django.utils import timezone
 from statistics import mean
 from django import template
 
-from app.models import get_gecko, Coin
+from app.models import get_gecko, Coin, CoinGecko, Data, Explorer
 from app.tools import d, t_s, avg
 from app.coins.data import models, filterss
 
@@ -16,7 +16,7 @@ def usd_to_btc(value):
     """
     Convert amount (value) of USD to BTC.
     """
-    return d(value) / d(Coin.objects.get(symbol="BTC").coingecko.latest('updated').data['price'])
+    return d(value) / d(CoinGecko.get.by_coin('BTC').latest().data['price'])
 
 
 @register.filter()
@@ -24,7 +24,7 @@ def btc_to_usd(value):
     """
     Convert amount (value) of BTC to USD.
     """
-    return d(value) * d(Coin.objects.get(symbol="BTC").coingecko.latest('updated').data['price'])
+    return d(value) * d(CoinGecko.get.by_coin('BTC').latest().data['price'])
 
 
 @register.filter(name='check_arrow')
@@ -88,22 +88,23 @@ def epic_to(value, target):
     """
     Convert amount (value) of Epic-Cash to given target - USD or Bitcoin.
     """
-    if target == 'btc':
-        return round(d(filterss['epic']['data'][target].avg_price) * d(value), 8)
-    else:
-        return round(d(filterss['epic']['data'][target].avg_price) * d(value), 3)
+    return round(d(Data.get.by_coin('EPIC').by_pair(target).latest().avg_price) * d(value), 8)
 
 
 def daily_mined(coin):
-    block_time = d(coin.explorer.last().average_blocktime)
-    block_reward = d(coin.explorer.last().reward)
+    block_time = d(Explorer.get.by_coin(coin).latest().average_blocktime)
+    block_reward = d(Explorer.get.by_coin(coin).latest().reward)
     return {'coins': d((86400 / block_time) * block_reward, 0),
             'blocks': d(86400 / block_time, 0)}
 
 
+#     *** add all halvings data **
 def halving(coin):
-    block_time = d(coin.explorer.order_by('updated').last().average_blocktime)
-    block_height = d(coin.explorer.order_by('updated').last().height)
+    """
+    Calculate time of next halving based on block height and average block time.
+    """
+    block_time = d(Explorer.get.by_coin(coin).latest().average_blocktime)
+    block_height = d(Explorer.get.by_coin(coin).latest().height)
 
     def check_height():
         if block_height < 480_960:
@@ -118,7 +119,7 @@ def halving(coin):
 
 
 def high_low_7d(coin, target=""):
-    data = [p for t, p in get_gecko(coin).data['price_7d'+target]]
+    data = [p for t, p in CoinGecko.get.by_coin(coin).latest().data['price_7d'+target]]
     return {
         'low': min(data),
         'high': max(data),
