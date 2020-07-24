@@ -186,7 +186,7 @@
                                     <span class="my-2 py-1" style="font-size: 2.2rem;">
                                         <strong>
                                             <i class="fa fa-bitcoin color-orange"></i>
-                                            {{filters.epic.data.btc.avg_price|floatformat:-8}}
+                                            {{filters.epic.data.btc.avg_price|satoshi|floatformat:0}} satoshi
                                        </strong>
                                     </span>
                                 </div>
@@ -535,7 +535,12 @@
                                     {% endif %}
                                     <span class="text-bold">
                                        <a href="{{v.trading_url}}" target="_blank">
+                                           {% if k == 'usdt' %}
+                                           <span class="num-md-white">{{v.last_price|floatformat:-3}}</span>
+                                           {% elif k == 'btc' %}
                                            <span class="num-md-white">{{v.last_price|floatformat:-8}}</span>
+                                    {% endif %}
+
                                        </a>
                                     </span>
                                 </p>

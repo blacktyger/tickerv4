@@ -24,16 +24,16 @@ def update(tasks):
                  f"-- END IN TIME: {timedelta(seconds=end_time - start_time).total_seconds()} SECONDS")
 
 
-@background(schedule=500)
-def update_all():
-    tasks = [pool_data, coingecko_data, explorer_data, citex_data, vitex_data, epic_data, mw_charts, main_charts]
+@background(schedule=1)
+def save_history():
+    tasks = [history_data]
     update(tasks)
     return f'OK'
 
 
 @background(schedule=1)
-def save_history():
-    tasks = [history_data]
+def update_all():
+    tasks = [pool_data, coingecko_data, explorer_data, citex_data, vitex_data, epic_data, mw_charts, main_charts]
     update(tasks)
     return f'OK'
 

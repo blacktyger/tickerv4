@@ -59,6 +59,11 @@ def add(value, num):
 
 
 @register.filter()
+def satoshi(value):
+    return d(value) * 100000000
+
+
+@register.filter()
 def times(value, num):
     return d(value) * d(num)
 

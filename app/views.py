@@ -5,6 +5,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.template import loader
 from django.http import HttpResponse
 from django.views.generic import ListView
+from django.views.generic.base import View, TemplateView
 from rest_framework import viewsets
 
 from .serializers import DataSerializer
@@ -24,16 +25,10 @@ class DataViewSet(viewsets.ModelViewSet):
     serializer_class = DataSerializer
 
 
-class IndexView(ListView):
-
+class IndexView(TemplateView):
     context_object_name = 'home_list'
     template_name = 'home-test.html'
     model = Data
-    mw_data = {coin.symbol: CoinGecko.get.by_coin(coin).latest().data
-               for coin in Coin.objects.filter(mw_coin=True)}
-    exchange_data = {ex: {
-        target: ex.ticker.filter(pair=target).order_by('updated').last() for target in pairs
-        if ex.ticker.filter(pair=target)} for ex in Exchange.objects.all()}
 
     def charts(self):
         for chart in Chart.objects.filter(name='mw_chart'):
@@ -41,73 +36,67 @@ class IndexView(ListView):
                 self.mw_data[chart.coin.symbol].update(
                     {'chart': {'div': chart.div, 'script': chart.script}})
 
-    filterss = {
-        'epic': {
-            'coin': models()['epic'],
-            'gecko': models()['epic'].coingecko.order_by('updated').last(),
-            'explorer': models()['epic'].explorer.order_by('updated').last(),
-            'data': {
-                'all': models()['epic'].data.all(),
-                'usdt': Data.objects.filter(coin=models()['epic'], pair='usdt').order_by('updated').last(),
-                'btc': Data.objects.filter(coin=models()['epic'], pair='btc').order_by('updated').last(),
-                'last': [Data.objects.filter(coin=models()['epic'], pair='usdt').order_by('updated').last(),
-                         Data.objects.filter(coin=models()['epic'], pair='btc').order_by('updated').last()]
-                }},
-        'bitcoin': {
-            'coin': models()['btc'],
-            'gecko': models()['btc'].coingecko.latest('updated').data
-            },
-        'exchanges': {
-            'citex': {
-                'details': models()['citex'],
-                'tickers': {
-                    'all': models()['citex'].ticker.all(),
-                    'usdt': models()['citex'].ticker.filter(pair='usdt'),
-                    'btc': models()['citex'].ticker.filter(pair='btc'),
-                    'last': [models()['citex'].ticker.filter(pair='usdt').order_by('updated').last(),
-                             models()['citex'].ticker.filter(pair='btc').order_by('updated').last()],
-                    }},
-            'vitex': {
-                'details': models()['vitex'],
-                'tickers': {
-                    'all': models()['vitex'].ticker.all(),
-                    'usdt': models()['vitex'].ticker.filter(pair='usdt'),
-                    'btc': models()['vitex'].ticker.filter(pair='btc'),
-                    'last': [models()['vitex'].ticker.filter(pair='usdt').order_by('updated').last(),
-                             models()['vitex'].ticker.filter(pair='btc').order_by('updated').last()],
-                    }}
-            },
-        'charts': {
-            'epic_7d_price': Chart.get.by_name(name='epic_7d_price').latest(),
-            'epic_vol_24h': Chart.get.by_name(name='vol_24h').latest(),
-            },
-        }
-
-    data = {
-        # Models QuerySets
-        'currency': Currency.objects.all(),
-        'links': Link.objects.all(),
-        'epic': Coin.get.by_name('epic-cash'),
-
-
-        'other_coins': Coin.objects.filter(mw_coin=False),
-
-        # 'last_update': Data.get.latest().updated,
-        'halving': halving(models()['epic']),
-        'mw_data': mw_data,
-        'ex_tickers': exchange_data,
-        'volumes': volumes(),
-        'daily_mined': daily_mined(models()['epic']),
-        'high_low_7d': high_low_7d(models()['epic']),
-        'high_low_7d_btc': high_low_7d(models()['epic'], '_btc'),
-        'update_data': update_data(),
-        }
-
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
-        for k, v in self.data.items():
-            context[k] = v
-        context['filters'] = self.filterss
+        context['filters'] = {
+            'epic': {
+                'coin': models()['epic'],
+                'gecko': models()['epic'].coingecko.order_by('updated').last(),
+                'explorer': models()['epic'].explorer.order_by('updated').last(),
+                'data': {
+                    'all': models()['epic'].data.all(),
+                    'usdt': Data.objects.filter(coin=models()['epic'], pair='usdt').order_by('updated').last(),
+                    'btc': Data.objects.filter(coin=models()['epic'], pair='btc').order_by('updated').last(),
+                    'last': [Data.objects.filter(coin=models()['epic'], pair='usdt').order_by('updated').last(),
+                             Data.objects.filter(coin=models()['epic'], pair='btc').order_by('updated').last()]
+                    }},
+            'bitcoin': {
+                'coin': models()['btc'],
+                'gecko': models()['btc'].coingecko.latest('updated').data
+                },
+            'exchanges': {
+                'citex': {
+                    'details': models()['citex'],
+                    'tickers': {
+                        'all': models()['citex'].ticker.all(),
+                        'usdt': models()['citex'].ticker.filter(pair='usdt'),
+                        'btc': models()['citex'].ticker.filter(pair='btc'),
+                        'last': [models()['citex'].ticker.filter(pair='usdt').order_by('updated').last(),
+                                 models()['citex'].ticker.filter(pair='btc').order_by('updated').last()],
+                        }},
+                'vitex': {
+                    'details': models()['vitex'],
+                    'tickers': {
+                        'all': models()['vitex'].ticker.all(),
+                        'usdt': models()['vitex'].ticker.filter(pair='usdt'),
+                        'btc': models()['vitex'].ticker.filter(pair='btc'),
+                        'last': [models()['vitex'].ticker.filter(pair='usdt').order_by('updated').last(),
+                                 models()['vitex'].ticker.filter(pair='btc').order_by('updated').last()],
+                        }}
+                },
+            'charts': {
+                'epic_7d_price': Chart.get.by_name(name='epic_7d_price').latest(),
+                'epic_vol_24h': Chart.get.by_name(name='vol_24h').latest(),
+                },
+            }
+        context['ex_tickers'] = {
+            ex: {
+                target: ex.ticker.filter(pair=target).order_by('updated').last() for target in pairs
+                if ex.ticker.filter(pair=target)} for ex in Exchange.objects.all()}
+        context['currency'] = Currency.objects.all(),
+        context['links'] = Link.objects.all(),
+        context['epic'] = Coin.get.by_name('epic-cash'),
+        context['other_coins'] = Coin.objects.filter(mw_coin=False),
+        context['last_update'] = Data.get.latest().updated,
+        context['halving'] = halving(models()['epic']),
+        context['mw_data'] = {coin.symbol: CoinGecko.get.by_coin(coin).latest().data
+                              for coin in Coin.objects.filter(mw_coin=True)},
+        context['volumes'] = volumes(),
+        context['daily_mined'] = daily_mined(models()['epic']),
+        context['high_low_7d'] = high_low_7d(models()['epic']),
+        context['high_low_7d_btc'] = high_low_7d(models()['epic'], '_btc'),
+        context['update_data'] = update_data(),
+
         return context
 
 

@@ -24,8 +24,9 @@ if settings.DEBUG:
     urlpatterns = [path('__debug__/', include(debug_toolbar.urls)),
                       ] + urlpatterns
 
-clear_db_task(update_all())
-update_all(repeat=500, verbose_name='update_all')
 clear_db_task(save_history())
 save_history(repeat=Task.HOURLY)
+clear_db_task(update_all())
+update_all(repeat=500, verbose_name='update_all')
+
 
